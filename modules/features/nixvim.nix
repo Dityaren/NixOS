@@ -550,6 +550,169 @@
 
           # ── Statusline ────────────────────────────────────────────────────
 
+          # ── Discord Rich Presence ───────────────────────────────────────────
+          # Uses Cord's built-in Neovim Discord application by default.
+          # To use your own Discord application and custom main image, replace
+          # discordApplicationId and discordIconUrl below.
+
+          cord = {
+            enable = true;
+            autoLoad = true;
+
+            settings = {
+              editor = {
+                # Create a Discord application and put its Application ID here.
+                # client = "YOUR_DISCORD_APPLICATION_ID";
+
+                # Text shown when hovering over the main image.
+                tooltip = "??? why hover chrono??";
+
+                # Your custom main/editor image.
+                icon = "https://c.tenor.com/MYFOhiSPB6cAAAAC/tenor.gif";
+              };
+
+              display = {
+                theme = "atom";
+                flavor = "accent";
+
+                # Only show the editor/main image.
+                view = "editor";
+
+                swap_icons = true;
+              };
+
+              text = {
+                workspace = {
+                  __raw = ''
+                    function(opts)
+                      if opts.workspace and opts.workspace ~= "" then
+                        return "In " .. opts.workspace
+                      end
+
+                      return "In Neovim"
+                    end
+                  '';
+                };
+
+                editing = {
+                  __raw = ''
+                    function(opts)
+                      local names = {
+                        javascript = "JavaScript",
+                        javascriptreact = "JavaScript React",
+                        typescript = "TypeScript",
+                        typescriptreact = "TypeScript React",
+                        nix = "Nix",
+                        lua = "Lua",
+                        rust = "Rust",
+                        c = "C",
+                        cpp = "C++",
+                        python = "Python",
+                        html = "HTML",
+                        css = "CSS",
+                        scss = "SCSS",
+                        sass = "Sass",
+                        less = "Less",
+                        json = "JSON",
+                        jsonc = "JSONC",
+                        yaml = "YAML",
+                        toml = "TOML",
+                        markdown = "Markdown",
+                        bash = "Bash",
+                        sh = "Shell",
+                        zsh = "Shell",
+                        vim = "Vim Script",
+                        cmake = "CMake",
+                        sql = "SQL",
+                        java = "Java",
+                        go = "Go",
+                        php = "PHP",
+                      }
+
+                      local filetype = names[opts.filetype] or opts.filetype
+
+                      if not filetype or filetype == "" then
+                        return "Editing"
+                      end
+
+                      return "Editing " .. filetype
+                    end
+                  '';
+                };
+
+                viewing = {
+                  __raw = ''
+                    function(opts)
+                      local names = {
+                        javascript = "JavaScript",
+                        javascriptreact = "JavaScript React",
+                        typescript = "TypeScript",
+                        typescriptreact = "TypeScript React",
+                        nix = "Nix",
+                        lua = "Lua",
+                        rust = "Rust",
+                        c = "C",
+                        cpp = "C++",
+                        python = "Python",
+                        html = "HTML",
+                        css = "CSS",
+                        json = "JSON",
+                        jsonc = "JSONC",
+                        yaml = "YAML",
+                        toml = "TOML",
+                        markdown = "Markdown",
+                      }
+
+                      local filetype = names[opts.filetype] or opts.filetype
+
+                      if not filetype or filetype == "" then
+                        return "Viewing"
+                      end
+
+                      return "Viewing " .. filetype
+                    end
+                  '';
+                };
+
+                file_browser = "Browsing files";
+                plugin_manager = "Managing plugins";
+                lsp = "Configuring LSP";
+                docs = "Reading documentation";
+                vcs = "Working with version control";
+                notes = "Taking notes";
+                debug = "Debugging";
+                test = "Running tests";
+                diagnostics = "Checking diagnostics";
+                terminal = "Using terminal";
+                dashboard = "Home";
+              };
+
+              timestamp = {
+                enabled = true;
+              };
+
+              idle = {
+                enabled = true;
+                timeout = 300000;
+                show_status = true;
+                ignore_focus = true;
+                unidle_on_focus = true;
+                smart_idle = true;
+                details = "Idling";
+              };
+
+              advanced = {
+                discord = {
+                  reconnect = {
+                    enabled = true;
+                    interval = 5000;
+                    initial = true;
+                  };
+                };
+              };
+            };
+          };
+
           lualine = {
             enable = true;
             settings = {
@@ -557,9 +720,19 @@
                 theme = "kanagawa";
                 globalstatus = true;
                 icons_enabled = true;
-                component_separators = { left = "│"; right = "│"; };
-                section_separators = { left = ""; right = ""; };
-                disabled_filetypes.statusline = [ "neo-tree" "dashboard" "alpha" ];
+                component_separators = {
+                  left = "│";
+                  right = "│";
+                };
+                section_separators = {
+                  left = "";
+                  right = "";
+                };
+                disabled_filetypes.statusline = [
+                  "neo-tree"
+                  "dashboard"
+                  "alpha"
+                ];
               };
 
               sections = {
@@ -570,29 +743,56 @@
                   }
                 ];
                 lualine_b = [
-                  { __unkeyed = "branch"; icon = "󰘬"; }
+                  {
+                    __unkeyed = "branch";
+                    icon = "󰘬";
+                  }
                 ];
                 lualine_c = [
                   {
                     __unkeyed = "filename";
                     path = 1;
-                    symbols = { modified = " ●"; readonly = " 󰌾"; unnamed = "[No Name]"; };
+                    symbols = {
+                      modified = " ●";
+                      readonly = " 󰌾";
+                      unnamed = "[No Name]";
+                    };
                   }
                 ];
                 lualine_x = [
                   {
                     __unkeyed = "diagnostics";
-                    symbols = { error = "󰅚 "; warn = "󰀪 "; info = "󰋽 "; hint = "󰌵 "; };
+                    symbols = {
+                      error = "󰅚 ";
+                      warn = "󰀪 ";
+                      info = "󰋽 ";
+                      hint = "󰌵 ";
+                    };
                   }
                 ];
-                lualine_y = [ { __unkeyed = "filetype"; icon_only = true; } ];
-                lualine_z = [ { __unkeyed = "location"; padding = 1; } ];
+                lualine_y = [
+                  {
+                    __unkeyed = "filetype";
+                    icon_only = true;
+                  }
+                ];
+                lualine_z = [
+                  {
+                    __unkeyed = "location";
+                    padding = 1;
+                  }
+                ];
               };
 
               inactive_sections = {
                 lualine_a = [ ];
                 lualine_b = [ ];
-                lualine_c = [ { __unkeyed = "filename"; path = 1; } ];
+                lualine_c = [
+                  {
+                    __unkeyed = "filename";
+                    path = 1;
+                  }
+                ];
                 lualine_x = [ "location" ];
                 lualine_y = [ ];
                 lualine_z = [ ];
