@@ -14,6 +14,7 @@
         bat
         ripgrep
         fd
+        fzf
       ];
 
       home-manager.users.${vars.username} = {
@@ -21,7 +22,6 @@
           enable = true;
 
           shellAliases = {
-
             initdirenv = ''
               if test -e .envrc
                 echo ".envrc already exists"
@@ -46,6 +46,7 @@
             cat = "bat";
             grep = "rg";
             find = "fd";
+            f = "fzf";
 
             vi = "nvim";
             vim = "nvim";
@@ -108,6 +109,102 @@
               src = sponge.src;
             }
           ];
+        };
+
+        programs.fzf = {
+          enable = true;
+          enableFishIntegration = true;
+
+          # ─────────────────────────────────────────
+          # File discovery
+          # ─────────────────────────────────────────
+
+          defaultCommand = "fd --type f --hidden --follow --exclude .git";
+
+          fileWidget = {
+            command = "fd --type f --hidden --follow --exclude .git";
+
+            options = [
+              "--preview"
+              "bat --color=always --style=numbers --line-range=:300 {}"
+            ];
+          };
+
+          # ─────────────────────────────────────────
+          # Directory discovery
+          # ─────────────────────────────────────────
+
+          changeDirWidget = {
+            command = "fd --type d --hidden --follow --exclude .git";
+          };
+
+          # ─────────────────────────────────────────
+          # Fuzzy finder appearance
+          # Catppuccin-inspired palette
+          # ─────────────────────────────────────────
+
+          defaultOptions = [
+            "--height=60%"
+            "--layout=reverse"
+            "--border=rounded"
+
+            "--prompt=❯ "
+            "--pointer=▶"
+            "--marker=✓"
+
+            "--info=inline"
+
+            "--padding=1"
+
+            # Catppuccin Mocha-inspired colors.
+            #
+            # bg       = base
+            # bg+      = surface0
+            # fg       = text
+            # fg+      = text
+            # hl       = mauve
+            # hl+      = mauve
+            # border   = surface1
+            # prompt   = mauve
+            # pointer  = lavender
+            # marker   = green
+            # spinner  = mauve
+            # header   = subtext0
+            "--color=bg:#1e1e2e,bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4"
+            "--color=hl:#cba6f7,hl+:#cba6f7"
+            "--color=border:#45475a"
+            "--color=prompt:#cba6f7"
+            "--color=pointer:#b4befe"
+            "--color=marker:#a6e3a1"
+            "--color=spinner:#cba6f7"
+            "--color=header:#a6adc8"
+            "--color=info:#89b4fa"
+            "--color=query:#f5e0e8"
+          ];
+
+          historyWidget = {
+            options = [
+              "--height=60%"
+              "--layout=reverse"
+              "--border=rounded"
+
+              "--prompt=❯ "
+              "--pointer=▶"
+              "--marker=✓"
+              "--info=inline"
+
+              "--color=bg:#1e1e2e,bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4"
+              "--color=hl:#cba6f7,hl+:#cba6f7"
+              "--color=border:#45475a"
+              "--color=prompt:#cba6f7"
+              "--color=pointer:#b4befe"
+              "--color=marker:#a6e3a1"
+              "--color=spinner:#cba6f7"
+              "--color=header:#a6adc8"
+              "--color=info:#89b4fa"
+              "--color=query:#f5e0e8"
+            ];
+          };
         };
 
         programs.starship = {
