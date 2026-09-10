@@ -63,8 +63,8 @@
           };
 
           shellAbbrs = {
-            rebuild = "sudo nixos-rebuild switch --flake /home/lake/dotfiles/nixos#${vars.hostname}";
-            update = "nix flake update";
+            rebuild = "sudo nixos-rebuild switch --flake ${vars.flakeRoot}#${vars.hostname}";
+            update = "nix flake update --flake ${vars.flakeRoot}";
           };
 
           interactiveShellInit = ''
