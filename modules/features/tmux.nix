@@ -17,40 +17,28 @@
           # General
           # ─────────────────────────────────────────────
 
-          # Ctrl-A as the tmux prefix.
           prefix = "C-a";
 
-          # Use vi-style copy mode.
           keyMode = "vi";
 
-          # Start windows and panes at 1 instead of 0.
           baseIndex = 1;
 
-          # Make tmux respond immediately to key combinations.
           escapeTime = 0;
 
-          # Keep 10,000 lines of scrollback.
           historyLimit = 10000;
 
-          # Enable mouse support.
           mouse = true;
 
-          # Allow applications such as Neovim to receive focus events.
           focusEvents = true;
 
-          # Resize panes/windows when the terminal size changes.
           aggressiveResize = true;
 
-          # 24-hour clock.
           clock24 = true;
 
-          # Fish shell.
           shell = "${pkgs.fish}/bin/fish";
 
-          # Correct terminal type for modern terminal features.
           terminal = "tmux-256color";
 
-          # Use a protected tmux socket.
           secureSocket = true;
 
           # ─────────────────────────────────────────────
@@ -58,10 +46,6 @@
           # ─────────────────────────────────────────────
 
           plugins = with pkgs.tmuxPlugins; [
-            # Catppuccin should be loaded before plugins that
-            # may interact with the status line.
-            catppuccin
-
             sensible
             yank
             vim-tmux-navigator
@@ -74,59 +58,89 @@
           # ─────────────────────────────────────────────
 
           extraConfig = ''
-            # ─────────────────────────────────────────
-            # Terminal / true color
-            # ─────────────────────────────────────────
+            # ╭─────────────────────────────────────────╮
+            # │ Terminal                                │
+            # ╰─────────────────────────────────────────╯
 
             set -g default-terminal "tmux-256color"
 
             set -ag terminal-overrides ",xterm-256color:RGB"
             set -ag terminal-overrides ",xterm*:Tc"
 
-            # ─────────────────────────────────────────
-            # Prefix
-            # ─────────────────────────────────────────
 
-            # C-a is configured by Home Manager's `prefix`.
-            # C-b is intentionally unused.
+            # ╭─────────────────────────────────────────╮
+            # │ Kanagawa Palette                        │
+            # ╰─────────────────────────────────────────╯
 
-            # ─────────────────────────────────────────
-            # Windows / panes
-            # ─────────────────────────────────────────
+            # Background
+            set -g @kanagawa_bg "#16161D"
+            set -g @kanagawa_bg_alt "#1F1F28"
+            set -g @kanagawa_border "#2A2A37"
+
+            # Foreground
+            set -g @kanagawa_fg "#DCD7BA"
+            set -g @kanagawa_muted "#727169"
+
+            # Accents
+            set -g @kanagawa_blue "#7E9CD8"
+            set -g @kanagawa_cyan "#7FB4CA"
+            set -g @kanagawa_yellow "#DCA561"
+            set -g @kanagawa_green "#6A9589"
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Prefix                                  │
+            # ╰─────────────────────────────────────────╯
+
+            # C-a is configured through Home Manager.
+            # C-b remains unused.
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Windows / Panes                          │
+            # ╰─────────────────────────────────────────╯
 
             set -g base-index 1
             setw -g pane-base-index 1
             set -g renumber-windows on
 
-            # Keep the current working directory when creating
-            # windows and panes.
+            # Preserve current working directory.
+
             bind c new-window -c "#{pane_current_path}"
 
             bind '"' split-window -v -c "#{pane_current_path}"
             bind % split-window -h -c "#{pane_current_path}"
 
-            # Easier-to-remember split bindings.
+            # Easier split bindings.
             bind | split-window -h -c "#{pane_current_path}"
             bind - split-window -v -c "#{pane_current_path}"
 
-            # ─────────────────────────────────────────
-            # Pane navigation
-            # ─────────────────────────────────────────
 
-            # vim-tmux-navigator handles C-h/j/k/l.
+            # ╭─────────────────────────────────────────╮
+            # │ Pane Navigation                          │
+            # ╰─────────────────────────────────────────╯
 
-            # ─────────────────────────────────────────
-            # Pane resizing
-            # ─────────────────────────────────────────
+            # vim-tmux-navigator handles:
+            #
+            # C-h
+            # C-j
+            # C-k
+            # C-l
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Pane Resizing                            │
+            # ╰─────────────────────────────────────────╯
 
             bind -r H resize-pane -L 5
             bind -r J resize-pane -D 5
             bind -r K resize-pane -U 5
             bind -r L resize-pane -R 5
 
-            # ─────────────────────────────────────────
-            # Window navigation
-            # ─────────────────────────────────────────
+
+            # ╭─────────────────────────────────────────╮
+            # │ Window Navigation                        │
+            # ╰─────────────────────────────────────────╯
 
             bind -n M-H previous-window
             bind -n M-L next-window
@@ -134,111 +148,158 @@
             bind -n M-Left previous-window
             bind -n M-Right next-window
 
-            # ─────────────────────────────────────────
-            # Vi copy mode
-            # ─────────────────────────────────────────
 
-            bind-key -T copy-mode-vi v send-keys -X begin-selection
-            bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
-            bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+            # ╭─────────────────────────────────────────╮
+            # │ Vi Copy Mode                             │
+            # ╰─────────────────────────────────────────╯
 
-            # ─────────────────────────────────────────
-            # Reload
-            # ─────────────────────────────────────────
+            bind-key -T copy-mode-vi v \
+              send-keys -X begin-selection
+
+            bind-key -T copy-mode-vi C-v \
+              send-keys -X rectangle-toggle
+
+            bind-key -T copy-mode-vi y \
+              send-keys -X copy-selection-and-cancel
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Reload                                   │
+            # ╰─────────────────────────────────────────╯
 
             bind r source-file ~/.config/tmux/tmux.conf \; \
               display-message "tmux config reloaded"
 
-            # ─────────────────────────────────────────
-            # Catppuccin
-            # ─────────────────────────────────────────
 
-            # Catppuccin Mocha.
-            # Available flavors:
-            #   latte
-            #   frappe
-            #   macchiato
-            #   mocha
-            set -g @catppuccin_flavor "mocha"
+            # ╭─────────────────────────────────────────╮
+            # │ Status Bar                               │
+            # ╰─────────────────────────────────────────╯
 
-            # Rounded window indicators.
-            set -g @catppuccin_window_status_style "rounded"
+            set -g status on
 
-            # Window text.
-            set -g @catppuccin_window_default_text " #I:#W"
-            set -g @catppuccin_window_current_text " #I:#W"
+            # Top panel.
+            set -g status-position top
 
-            # Window number position.
-            set -g @catppuccin_window_number_position "left"
-
-            # Separators.
-            set -g @catppuccin_window_left_separator ""
-            set -g @catppuccin_window_middle_separator " "
-            set -g @catppuccin_window_right_separator " "
-
-            # Status bar separators.
-            set -g @catppuccin_status_left_separator ""
-            set -g @catppuccin_status_right_separator ""
-            set -g @catppuccin_status_connect_separator "yes"
-
-            # ─────────────────────────────────────────
-            # Catppuccin status modules
-            # ─────────────────────────────────────────
-
-            # Session information on the left.
-            set -g status-left "#{E:@catppuccin_status_session}"
-
-            # Application, directory, and time on the right.
-            set -g status-right "#{E:@catppuccin_status_application}"
-            set -ag status-right " #{E:@catppuccin_status_directory}"
-            set -ag status-right " #{E:@catppuccin_status_date_time}"
-
-            # ─────────────────────────────────────────
-            # Status bar sizing
-            # ─────────────────────────────────────────
-
-            set -g status-left-length 100
-            set -g status-right-length 100
             set -g status-interval 5
 
+            # IMPORTANT:
+            # Window list is LEFT aligned.
+            set -g status-justify left
+
+            # Give the right side enough space for the path/time.
+            set -g status-left-length 40
+            set -g status-right-length 100
+
+
             # ─────────────────────────────────────────
-            # Pane appearance
+            # Base bar
             # ─────────────────────────────────────────
+
+            set -g status-style \
+              "bg=#{@kanagawa_bg},fg=#{@kanagawa_fg}"
+
+            set -g status-left-style \
+              "bg=#{@kanagawa_bg},fg=#{@kanagawa_fg}"
+
+            set -g status-right-style \
+              "bg=#{@kanagawa_bg},fg=#{@kanagawa_fg}"
+
+
+            # ─────────────────────────────────────────
+            # NixOS logo
+            # ─────────────────────────────────────────
+
+            # NixOS logo at the absolute left.
+            #
+            # Requires a Nerd Font / font containing the
+            # NixOS glyph.
+
+            set -g status-left \
+              "#[fg=#{@kanagawa_blue},bold] 󱄅 #[fg=#{@kanagawa_border}]│ "
+
+
+            # ─────────────────────────────────────────
+            # Window list
+            # ─────────────────────────────────────────
+
+            # Inactive windows.
+            setw -g window-status-format \
+              "#[fg=#{@kanagawa_muted}]#I:#W "
+
+            # Active window.
+            setw -g window-status-current-format \
+              "#[fg=#{@kanagawa_blue},bold]#I:#W #[nobold]"
+
+            # No separators.
+            setw -g window-status-separator ""
+
+
+            # ─────────────────────────────────────────
+            # Right side
+            # ─────────────────────────────────────────
+
+            set -g status-right \
+              "#[fg=#{@kanagawa_muted}]#{b:pane_current_path} #[fg=#{@kanagawa_border}]│ #[fg=#{@kanagawa_yellow}]%H:%M "
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Pane Borders                             │
+            # ╰─────────────────────────────────────────╯
 
             set -g pane-border-lines single
 
-            # Catppuccin colors are used for the pane borders.
-            set -g pane-border-style "fg=#{@thm_surface_1}"
-            set -g pane-active-border-style "fg=#{@thm_lavender}"
+            set -g pane-border-style \
+              "fg=#{@kanagawa_border}"
 
-            # ─────────────────────────────────────────
-            # Window naming
-            # ─────────────────────────────────────────
+            set -g pane-active-border-style \
+              "fg=#{@kanagawa_blue}"
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Window Naming                            │
+            # ╰─────────────────────────────────────────╯
 
             setw -g automatic-rename on
-            setw -g automatic-rename-format '#{b:pane_current_path}'
 
-            # ─────────────────────────────────────────
-            # Resurrect
-            # ─────────────────────────────────────────
+            setw -g automatic-rename-format \
+              '#{b:pane_current_path}'
 
-            # Save pane contents and restore Neovim sessions.
+
+            # ╭─────────────────────────────────────────╮
+            # │ Messages                                 │
+            # ╰─────────────────────────────────────────╯
+
+            set -g message-style \
+              "bg=#{@kanagawa_bg_alt},fg=#{@kanagawa_fg}"
+
+            set -g message-command-style \
+              "bg=#{@kanagawa_bg_alt},fg=#{@kanagawa_fg}"
+
+
+            # ╭─────────────────────────────────────────╮
+            # │ Resurrect                                │
+            # ╰─────────────────────────────────────────╯
+
             set -g @resurrect-capture-pane-contents 'on'
+
             set -g @resurrect-strategy-nvim 'session'
 
-            # ─────────────────────────────────────────
-            # Continuum
-            # ─────────────────────────────────────────
 
-            # Automatically save and restore tmux sessions.
+            # ╭─────────────────────────────────────────╮
+            # │ Continuum                                │
+            # ╰─────────────────────────────────────────╯
+
             set -g @continuum-restore 'on'
+
             set -g @continuum-save-interval '15'
 
-            # ─────────────────────────────────────────
-            # Miscellaneous
-            # ─────────────────────────────────────────
+
+            # ╭─────────────────────────────────────────╮
+            # │ Miscellaneous                            │
+            # ╰─────────────────────────────────────────╯
 
             set -g focus-events on
+
             set -g history-limit 10000
           '';
         };
