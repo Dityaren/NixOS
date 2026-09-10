@@ -1,4 +1,5 @@
 { self, inputs, ... }:
+
 {
   flake.nixosModules.noctalia =
     {
@@ -8,6 +9,8 @@
     }:
     let
       noctalia = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+      noctaliaConfig = "${vars.flakeRoot}/modules/features/noctalia/settings.json";
     in
     {
       environment.systemPackages = [
@@ -18,15 +21,20 @@
 
           runtimeInputs = [
             pkgs.coreutils
+            pkgs.gnugrep
+            noctalia
           ];
 
           text = ''
             set -euo pipefail
 
-            SOURCE="$HOME/.config/noctalia/config.toml"
-            DEST="${vars.paths.noctalia.config}"
+            SOURCE="$HOME/.config/noctalia/settings.json"
+            DEST="${noctaliaConfig}"
 
-            if [ ! -f "$SOURCE" ]; then
+            echo "Exporting Noctalia Legacy configuration..."
+            echo
+
+            if [ ! -e "$SOURCE" ]; then
               echo "Error: Noctalia configuration not found:"
               echo "  $SOURCE"
               echo
@@ -34,20 +42,25 @@
               exit 1
             fi
 
+            if [ -L "$SOURCE" ]; then
+              echo "Current configuration is Nix-managed:"
+              echo "  $SOURCE -> $(readlink "$SOURCE")"
+              echo
+            fi
+
             mkdir -p "$(dirname "$DEST")"
 
-            echo "Exporting Noctalia configuration..."
-            echo
-            echo "  Source: $SOURCE"
-            echo "  Target: $DEST"
-            echo
+            cp --dereference "$SOURCE" "$DEST"
 
-            cp "$SOURCE" "$DEST"
-
-            echo "✓ Noctalia configuration exported successfully."
+            echo "Configuration exported successfully."
             echo
-            echo "Configuration:"
-            echo "  $DEST"
+            echo "  Source:"
+            echo "    $SOURCE"
+            echo
+            echo "  Destination:"
+            echo "    $DEST"
+            echo
+            echo "The exported configuration is now part of your NixOS configuration."
             echo
             echo "Rebuild with:"
             echo "  sudo nixos-rebuild switch --flake ${vars.flakeRoot}#${vars.hostname}"
@@ -56,7 +69,15 @@
       ];
 
       home-manager.users.${vars.username} = {
-        xdg.configFile."noctalia/config.toml".source = ./noctalia/config.toml;
+        imports = [
+          inputs.noctalia.homeModules.default
+        ];
+
+        programs.noctalia-shell = {
+          enable = true;
+
+          settings = ./noctalia/settings.json;
+        };
       };
     };
 }
