@@ -1,0 +1,29 @@
+{ self, inputs, ... }: {
+  flake.nixosModules.onlyoffice =
+    {
+      pkgs,
+      ...
+    }:
+    {
+      environment.systemPackages = with pkgs; [
+        onlyoffice-desktopeditors
+      ];
+
+      xdg.mime.defaultApplications = {
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" =
+          "onlyoffice-desktopeditors.desktop";
+
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" =
+          "onlyoffice-desktopeditors.desktop";
+
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" =
+          "onlyoffice-desktopeditors.desktop";
+
+        "application/msword" = "onlyoffice-desktopeditors.desktop";
+
+        "application/vnd.ms-excel" = "onlyoffice-desktopeditors.desktop";
+
+        "application/vnd.ms-powerpoint" = "onlyoffice-desktopeditors.desktop";
+      };
+    };
+}

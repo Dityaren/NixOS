@@ -1,0 +1,192 @@
+{
+  self,
+  ...
+}:
+{
+  flake.nixosModules.hostConfiguration =
+    {
+      pkgs,
+      vars,
+      lib,
+      ...
+    }:
+    {
+      imports = [
+        self.nixosModules.snowHardware
+        self.nixosModules.home-manager
+        self.nixosModules.niri
+        self.nixosModules.nvidia
+        #self.nixosModules.sddm-astronaut
+        self.nixosModules.ly
+        self.nixosModules.xdg
+        self.nixosModules.nixvim
+        self.nixosModules.spicetify
+        self.nixosModules.onlyoffice
+        self.nixosModules.steam
+        self.nixosModules.screenshot
+        self.nixosModules.fish
+        self.nixosModules.alacritty
+        self.nixosModules.zen-browser
+        self.nixosModules.noctalia
+        self.nixosModules.power-management
+        self.nixosModules.tmux
+
+      ];
+
+      # Nix
+      nix = {
+        settings = {
+          experimental-features = [
+            "nix-command"
+            "flakes"
+          ];
+          trusted-users = [
+            "root"
+            "${vars.username}"
+          ];
+        };
+
+      };
+
+      nixpkgs.config.allowUnfree = true;
+
+      # Boot
+      boot = {
+        loader = {
+          systemd-boot.enable = true;
+          efi.canTouchEfiVariables = true;
+        };
+
+        kernelPackages = pkgs.linuxPackages_latest;
+        supportedFilesystems = [
+          "ntfs"
+          "exfat"
+        ];
+      };
+
+      # Networking
+      networking = {
+        hostName = vars.hostname;
+        networkmanager.enable = true;
+      };
+
+      # Localization
+      time.timeZone = "Asia/Jakarta";
+
+      i18n.defaultLocale = "en_US.UTF-8";
+
+      services.xserver.xkb = {
+        layout = "us";
+        variant = "";
+      };
+
+      # Users
+      users = {
+        groups.lenovoctl = { };
+
+        users.${vars.username} = {
+          isNormalUser = true;
+          description = "User ${vars.username}";
+
+          shell = pkgs.fish;
+
+          extraGroups = [
+            "networkmanager"
+            "wheel"
+            "docker"
+            "lenovoctl"
+          ];
+        };
+      };
+
+      # Virtualization
+      virtualisation = {
+        docker = {
+          enable = true;
+
+          rootless = {
+            enable = true;
+            setSocketVariable = true;
+          };
+        };
+
+        podman.enable = true;
+      };
+
+      # Programs
+      programs.fish.enable = true;
+
+      # Services
+      services.udev.extraRules = ''
+        SUBSYSTEM=="platform", KERNEL=="VPC2004:00", \
+          RUN+="${pkgs.coreutils}/bin/chgrp lenovoctl /sys%p/conservation_mode", \
+          RUN+="${pkgs.coreutils}/bin/chmod 664 /sys%p/conservation_mode"
+      '';
+
+      programs.direnv = {
+        enable = true;
+        nix-direnv.enable = true;
+      };
+
+      # Environment
+      environment = {
+
+        systemPackages = with pkgs; [
+          jq
+          temurin-bin
+          easyeffects
+          sioyek
+          devenv
+          obs-studio
+          vim
+          wget
+          git
+          alacritty
+          tmux
+          docker-compose
+          dbeaver-bin
+        ];
+
+        variables = {
+          EDITOR = "vim";
+          BROWSER = "zen-beta";
+        };
+      };
+
+      # Fonts
+      fonts.packages = with pkgs; [
+        nerd-fonts.fira-code
+        nerd-fonts.droid-sans-mono
+        nerd-fonts.fira-mono
+        nerd-fonts.symbols-only
+        corefonts
+        vista-fonts
+      ];
+
+      # onlyoffice has trouble with symlinks: https://github.com/ONLYOFFICE/DocumentServer/issues/1859
+      system.userActivationScripts = {
+        copy-fonts-local-share = {
+          text = ''
+            rm -rf ~/.local/share/fonts
+            mkdir -p ~/.local/share/fonts
+            cp ${pkgs.corefonts}/share/fonts/truetype/* ~/.local/share/fonts/
+            chmod 544 ~/.local/share/fonts
+            chmod 444 ~/.local/share/fonts/*
+          '';
+        };
+      };
+
+      # Memory
+      swapDevices = [
+        {
+          device = "/swapfile";
+          size = 16 * 1024;
+        }
+      ];
+
+      zramSwap.enable = true;
+
+      # System
+      system.stateVersion = vars.stateVersion;
+    };
+}
