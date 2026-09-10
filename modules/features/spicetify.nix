@@ -11,7 +11,7 @@
         enable = true;
 
         # Native, up-to-date themes included directly in your flake packages
-        theme = spicePkgs.themes.hazy;
+        theme = spicePkgs.themes.sleek;
         #colorScheme = "mocha"; # Options: latte, frappe, macchiato, mocha
 
         # Alternative Option (uncomment to switch to Comfy):
