@@ -138,6 +138,7 @@
       environment = {
 
         systemPackages = with pkgs; [
+          obsidian
           jq
           temurin-bin
           easyeffects
