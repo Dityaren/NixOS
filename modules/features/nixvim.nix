@@ -137,22 +137,99 @@
 
         plugins = {
 
-          mini-comment = {
+          mini = {
             enable = true;
 
-            settings = {
-              mappings = {
-                comment = "<leader>/";
-                comment_line = "<leader>/";
-                comment_visual = "<leader>/";
-                textobject = "<leader>/";
+            modules = {
+              comment = {
+                mappings = {
+                  comment = "<leader>/";
+                  comment_line = "<leader>/";
+                  comment_visual = "<leader>/";
+                  textobject = "<leader>/";
+                };
+
+                options = {
+                  ignore_blank_line = false;
+                  pad_comment_parts = true;
+                  start_of_line = false;
+                };
               };
 
-              options = {
-                ignore_blank_line = false;
-                pad_comment_parts = true;
-                start_of_line = false;
+              icons = { };
+
+              files = {
+                mappings = {
+                  close = "<Esc>";
+                  go_in = "l";
+                  go_in_plus = "L";
+                  go_out = "h";
+                  go_out_plus = "H";
+                  mark_goto = "'";
+                  mark_set = "m";
+                  reset = "<BS>";
+                  reveal_cwd = "@";
+                  show_help = "g?";
+                  synchronize = "=";
+                  trim_left = "<";
+                  trim_right = ">";
+                };
+
+                options = {
+                  permanent_delete = true;
+                  use_as_default_explorer = true;
+                  lsp_timeout = 1000;
+                };
+
+                windows = {
+                  max_number = 3;
+                  preview = true;
+                  width_focus = 42;
+                  width_nofocus = 22;
+                  width_preview = 55;
+                };
               };
+            };
+          };
+
+          alpha = {
+            enable = true;
+            autoLoad = true;
+
+            # Use our own layout instead of Alpha's built-in dashboard theme.
+            theme = null;
+
+            settings = {
+              layout = [
+                {
+                  type = "padding";
+                  val = 2;
+                }
+                {
+                  type = "text";
+                  val = [
+                    ''/\_/\ ''
+                    "( o.o )"
+                    "> ^ <"
+                  ];
+                  opts = {
+                    hl = "Title";
+                    position = "center";
+                  };
+                }
+                {
+                  type = "padding";
+                  val = 2;
+                }
+                {
+                  type = "text";
+                  val = "  Neovim";
+                  opts = {
+                    hl = "Comment";
+                    position = "center";
+                  };
+                }
+              ];
             };
           };
 
@@ -329,40 +406,6 @@
           };
 
           lsp-lines.enable = true;
-
-          neo-tree = {
-            enable = true;
-
-            settings = {
-              close_if_last_window = true;
-
-              filesystem = {
-                filtered_items = {
-                  visible = true;
-                  hide_dotfiles = false;
-                  hide_gitignored = false;
-
-                  hide_by_name = [
-                    "node_modules"
-                    ".git"
-                    "dist"
-                    "build"
-                  ];
-                };
-
-                follow_current_file = {
-                  enabled = true;
-                };
-
-                hijack_netrw_behavior = "open_default";
-              };
-
-              window = {
-                position = "left";
-                width = 35;
-              };
-            };
-          };
 
           lsp = {
             enable = true;
@@ -670,7 +713,7 @@
                   right = "";
                 };
                 disabled_filetypes.statusline = [
-                  "neo-tree"
+                  "minifiles"
                   "dashboard"
                   "alpha"
                 ];
@@ -844,7 +887,7 @@
                   "help"
                   "dashboard"
                   "NvimTree"
-                  "neo-tree"
+                  "minifiles"
                   "TelescopePrompt"
                   "TelescopeResults"
                 ];
@@ -1065,14 +1108,14 @@
           {
             key = "<leader>e";
             mode = "n";
-            action = "<cmd>Neotree toggle<CR>";
-            options.desc = "Toggle file explorer";
+            action = "<cmd>lua MiniFiles.open()<CR>";
+            options.desc = "Open file explorer";
           }
 
           {
             key = "<leader>o";
             mode = "n";
-            action = "<cmd>Neotree reveal<CR>";
+            action = "<cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0)); MiniFiles.reveal_cwd()<CR>";
             options.desc = "Reveal current file";
           }
 
