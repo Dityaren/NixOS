@@ -14,10 +14,6 @@
       programs.nixvim = {
         enable = true;
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Appearance
-        # ─────────────────────────────────────────────────────────────────────
-
         colorschemes.kanagawa = {
           enable = true;
           settings = {
@@ -33,26 +29,23 @@
         };
 
         opts = {
-          # Numbers / cursor
+
           number = true;
           relativenumber = true;
           cursorline = true;
           cursorlineopt = "both";
           signcolumn = "yes:1";
 
-          # Scrolling
           scrolloff = 8;
           sidescrolloff = 8;
           smoothscroll = true;
 
-          # Editing
           wrap = false;
           expandtab = true;
           shiftwidth = 2;
           tabstop = 2;
           softtabstop = 2;
 
-          # UI
           termguicolors = true;
           cmdheight = 0;
           laststatus = 3;
@@ -61,30 +54,24 @@
           pumheight = 10;
           ruler = false;
 
-          # Splits
           splitbelow = true;
           splitright = true;
           splitkeep = "screen";
 
-          # Interaction
           mouse = "a";
           clipboard = "unnamedplus";
 
-          # Search
           ignorecase = true;
           smartcase = true;
           hlsearch = true;
           incsearch = true;
 
-          # Completion / responsiveness
           updatetime = 250;
           timeoutlen = 300;
 
-          # Folding
           foldlevel = 99;
           foldlevelstart = 99;
 
-          # Don't show ~ on empty lines at the end of a buffer.
           fillchars = {
             eob = " ";
           };
@@ -96,21 +83,18 @@
         };
 
         extraPackages = with pkgs; [
-          # General tools
+
           ripgrep
           fd
 
-          # Nix development
           nil
           nixfmt
           deadnix
           statix
 
-          # Lua development
           lua-language-server
           stylua
 
-          # Web development
           nodejs
           typescript-language-server
           tailwindcss-language-server
@@ -119,36 +103,27 @@
           yaml-language-server
           vscode-json-languageserver
 
-          # Rust
           cargo
           rustc
           clippy
           rustfmt
           taplo
 
-          # Rust workflow
           cargo-watch
           cargo-edit
           cargo-nextest
           bacon
 
-          # C / C++
           clang-tools
           gcc
           cmake
           gnumake
 
-          # Debugging
           lldb
         ];
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Diagnostics
-        # ─────────────────────────────────────────────────────────────────────
-
         diagnostic.settings = {
-          # lsp-lines renders diagnostics below the affected line instead of
-          # creating noisy inline virtual text.
+
           virtual_text = false;
           underline = true;
           signs = true;
@@ -160,12 +135,7 @@
           };
         };
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Plugins
-        # ─────────────────────────────────────────────────────────────────────
-
         plugins = {
-          # ── Editing ────────────────────────────────────────────────────────
 
           mini-comment = {
             enable = true;
@@ -229,8 +199,6 @@
             };
           };
 
-          # ── Git / navigation ──────────────────────────────────────────────
-
           gitsigns = {
             enable = true;
 
@@ -281,10 +249,6 @@
             };
           };
 
-          # ── UI ────────────────────────────────────────────────────────────
-
-          # Replaces the traditional command line, search prompt and noisy
-          # LSP messages with floating UI.
           noice = {
             enable = true;
 
@@ -320,13 +284,10 @@
             };
           };
 
-          # Highlights TODO/FIXME/HACK/WARN/NOTE comments and integrates with
-          # the normal search/list workflow.
           todo-comments = {
             enable = true;
           };
 
-          # Highlights references to the symbol under the cursor.
           illuminate = {
             enable = true;
 
@@ -343,7 +304,6 @@
             };
           };
 
-          # Better visual rendering for CSS/HTML color values.
           colorizer = {
             enable = true;
 
@@ -368,10 +328,7 @@
             };
           };
 
-          # Cleaner multi-line LSP diagnostics.
           lsp-lines.enable = true;
-
-          # ── File explorer ─────────────────────────────────────────────────
 
           neo-tree = {
             enable = true;
@@ -406,8 +363,6 @@
               };
             };
           };
-
-          # ── LSP ──────────────────────────────────────────────────────────
 
           lsp = {
             enable = true;
@@ -499,8 +454,6 @@
             ];
           };
 
-          # ── Completion ────────────────────────────────────────────────────
-
           blink-cmp = {
             enable = true;
 
@@ -548,26 +501,15 @@
             };
           };
 
-          # ── Statusline ────────────────────────────────────────────────────
-
-          # ── Discord Rich Presence ───────────────────────────────────────────
-          # Uses Cord's built-in Neovim Discord application by default.
-          # To use your own Discord application and custom main image, replace
-          # discordApplicationId and discordIconUrl below.
-
           cord = {
             enable = true;
             autoLoad = true;
 
             settings = {
               editor = {
-                # Create a Discord application and put its Application ID here.
-                # client = "YOUR_DISCORD_APPLICATION_ID";
 
-                # Text shown when hovering over the main image.
                 tooltip = "??? why hover chrono??";
 
-                # Your custom main/editor image.
                 icon = "https://c.tenor.com/MYFOhiSPB6cAAAAC/tenor.gif";
               };
 
@@ -575,7 +517,6 @@
                 theme = "atom";
                 flavor = "accent";
 
-                # Only show the editor/main image.
                 view = "editor";
 
                 swap_icons = true;
@@ -800,8 +741,6 @@
             };
           };
 
-          # ── Telescope ─────────────────────────────────────────────────────
-
           telescope = {
             enable = true;
 
@@ -887,13 +826,6 @@
             };
           };
 
-          # ── Harpoon ───────────────────────────────────────────────────────
-
-          # Kept because the existing workflow uses Harpoon directly.
-          # Telescope integration is enabled above.
-
-          # ── Indentation ───────────────────────────────────────────────────
-
           indent-blankline = {
             enable = true;
 
@@ -919,8 +851,6 @@
               };
             };
           };
-
-          # ── Syntax / Treesitter ──────────────────────────────────────────
 
           treesitter = {
             enable = true;
@@ -953,15 +883,12 @@
                 "toml"
                 "ron"
 
-                # C / C++
                 "c"
                 "cpp"
                 "cmake"
               ];
             };
           };
-
-          # ── Formatting ────────────────────────────────────────────────────
 
           conform-nvim = {
             enable = true;
@@ -1028,7 +955,6 @@
                   "taplo"
                 ];
 
-                # C / C++
                 c = [
                   "clang-format"
                 ];
@@ -1054,12 +980,8 @@
           };
         };
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Keymaps
-        # ─────────────────────────────────────────────────────────────────────
-
         keymaps = [
-          # LSP
+
           {
             key = "gd";
             mode = "n";
@@ -1119,7 +1041,6 @@
             options.desc = "Format buffer";
           }
 
-          # Diagnostics
           {
             key = "[d";
             mode = "n";
@@ -1141,7 +1062,6 @@
             options.desc = "Toggle diagnostics";
           }
 
-          # File explorer
           {
             key = "<leader>e";
             mode = "n";
@@ -1156,7 +1076,6 @@
             options.desc = "Reveal current file";
           }
 
-          # Telescope
           {
             key = "<leader><space>";
             mode = "n";
@@ -1171,7 +1090,6 @@
             options.desc = "Search project";
           }
 
-          # Harpoon
           {
             key = "<leader>a";
             mode = "n";
@@ -1214,7 +1132,6 @@
             options.desc = "Harpoon file 4";
           }
 
-          # Noice
           {
             key = "<leader>sn";
             mode = "n";
@@ -1229,7 +1146,6 @@
             options.desc = "Show last message";
           }
 
-          # TODOs
           {
             key = "<leader>st";
             mode = "n";
@@ -1237,7 +1153,6 @@
             options.desc = "Search TODOs";
           }
 
-          # Fold
           {
             key = "za";
             mode = "n";
@@ -1245,7 +1160,6 @@
             options.desc = "Toggle fold";
           }
 
-          # Clear search highlighting
           {
             key = "<Esc>";
             mode = "n";

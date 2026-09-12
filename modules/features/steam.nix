@@ -12,14 +12,9 @@
     };
 
     environment.systemPackages = with pkgs; [
-      # Steam
       steam-run
       protonup-qt
-
-      # Non-Steam launchers
       heroic
-
-      # Gaming utilities
       gamescope
       mangohud
       goverlay

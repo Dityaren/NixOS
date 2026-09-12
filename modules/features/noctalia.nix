@@ -40,61 +40,45 @@
 
             trap cleanup EXIT
 
-            echo "Exporting current Noctalia settings..."
-            echo
-
             if ! noctalia-shell ipc call state all >/dev/null 2>&1; then
               echo "Error: Noctalia Shell is not running or IPC is unavailable."
-              echo
-              echo "Start Noctalia Shell before running noctalia-export."
               exit 1
             fi
-
-            echo "Reading settings from Noctalia..."
 
             if ! noctalia-shell ipc call state all > "$RAW_TMP"; then
               echo
               echo "Error: Failed to retrieve Noctalia state."
-              echo "Existing configuration was NOT changed."
               exit 1
             fi
 
             if ! jq -e '.settings | type == "object"' "$RAW_TMP" >/dev/null; then
               echo
               echo "Error: Noctalia returned an invalid settings object."
-              echo "Expected .settings to be a JSON object."
-              echo
-              echo "Existing configuration was NOT changed."
               exit 1
             fi
 
             if ! jq '.settings' "$RAW_TMP" > "$JSON_TMP"; then
               echo
               echo "Error: Failed to generate settings.json."
-              echo "Existing configuration was NOT changed."
               exit 1
             fi
 
             if ! jq empty "$JSON_TMP" >/dev/null; then
               echo
               echo "Error: Generated settings.json is invalid JSON."
-              echo "Existing configuration was NOT changed."
               exit 1
             fi
 
             mv -f "$JSON_TMP" "$DEST"
 
             echo
-            echo "Noctalia configuration exported successfully."
-            echo
+            echo "Noctalia configuration exported"
             echo "  $DEST"
             echo
-            echo "Review the changes with:"
-            echo
+            echo "Review the changes:"
             echo "  git diff -- modules/features/noctalia/settings.json"
             echo
-            echo "Run nixos-rebuild when you want this configuration"
-            echo "to become the new declarative state."
+            echo "Current noctalia settings is now declarative"
           '';
         })
       ];

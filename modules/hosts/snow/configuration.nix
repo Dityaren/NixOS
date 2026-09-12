@@ -32,7 +32,6 @@
 
       ];
 
-      # Nix
       nix = {
         settings = {
           experimental-features = [
@@ -49,7 +48,6 @@
 
       nixpkgs.config.allowUnfree = true;
 
-      # Boot
       boot = {
         loader = {
           systemd-boot.enable = true;
@@ -63,7 +61,6 @@
         ];
       };
 
-      # Networking
       networking = {
         hostName = vars.hostname;
         networkmanager.enable = true;
@@ -75,7 +72,6 @@
         ];
       };
 
-      # Localization
       time.timeZone = "Asia/Jakarta";
 
       i18n.defaultLocale = "en_US.UTF-8";
@@ -85,9 +81,7 @@
         variant = "";
       };
 
-      # Users
       users = {
-        groups.lenovoctl = { };
 
         users.${vars.username} = {
           isNormalUser = true;
@@ -99,12 +93,10 @@
             "networkmanager"
             "wheel"
             "docker"
-            "lenovoctl"
           ];
         };
       };
 
-      # Virtualization
       virtualisation = {
         docker = {
           enable = true;
@@ -118,10 +110,8 @@
         podman.enable = true;
       };
 
-      # Programs
       programs.fish.enable = true;
 
-      # Services
       services.udev.extraRules = ''
         SUBSYSTEM=="platform", KERNEL=="VPC2004:00", \
           RUN+="${pkgs.coreutils}/bin/chgrp lenovoctl /sys%p/conservation_mode", \
@@ -133,9 +123,7 @@
         nix-direnv.enable = true;
       };
 
-      # Environment
       environment = {
-
         systemPackages = with pkgs; [
           obsidian
           jq
@@ -159,7 +147,6 @@
         };
       };
 
-      # Fonts
       fonts.packages = with pkgs; [
         nerd-fonts.fira-code
         nerd-fonts.droid-sans-mono
@@ -182,17 +169,13 @@
         };
       };
 
-      # Memory
       swapDevices = [
         {
           device = "/swapfile";
           size = 16 * 1024;
         }
       ];
-
       zramSwap.enable = true;
-
-      # System
       system.stateVersion = vars.stateVersion;
     };
 }

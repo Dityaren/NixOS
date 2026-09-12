@@ -17,7 +17,6 @@
         nvidia = {
           package = config.boot.kernelPackages.nvidiaPackages.stable;
 
-          # RTX 3050 Mobile
           open = true;
 
           modesetting.enable = true;
