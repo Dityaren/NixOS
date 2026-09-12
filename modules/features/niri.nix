@@ -126,7 +126,7 @@
 
             layout = {
               background-color = "transparent";
-              gaps = 3;
+              gaps = 0;
 
               focus-ring.off = { };
               shadow.off = { };
