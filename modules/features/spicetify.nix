@@ -5,25 +5,37 @@
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
     in
     {
-      imports = [ inputs.spicetify-nix.nixosModules.default ];
+      imports = [
+        inputs.spicetify-nix.nixosModules.default
+      ];
 
       programs.spicetify = {
         enable = true;
 
-        # Native, up-to-date themes included directly in your flake packages
-        theme = spicePkgs.themes.sleek;
-        #colorScheme = "mocha"; # Options: latte, frappe, macchiato, mocha
+        theme = spicePkgs.themes.text;
 
-        # Alternative Option (uncomment to switch to Comfy):
-        # theme = spicePkgs.themes.comfy;
-        # colorScheme = "Comfy";
+        colorScheme = "Kanagawa";
 
         enabledExtensions = with spicePkgs.extensions; [
-          adblock
+          adblockify
           shuffle
           keyboardShortcut
-          beautifulLyrics
+          fullAppDisplay
+          sortPlay
+          extendedCopy
+          bookmark
+          bestMoment
+          catJamSynced
         ];
+
+        enabledCustomApps = with spicePkgs.apps; [
+          lyricsPlus
+          newReleases
+          historyInSidebar
+          ncsVisualizer
+          betterLibrary
+        ];
+
       };
     };
 }
