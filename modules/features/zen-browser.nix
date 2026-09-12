@@ -18,11 +18,14 @@
             DisableFirefoxStudies = true;
             DisablePocket = true;
             DontCheckDefaultBrowser = true;
-            OfferToSaveLogins = false; # Bitwarden handles passwords
+            OfferToSaveLogins = false;
           };
 
           profiles.default = {
-            search.default = "google";
+            search = {
+              force = true;
+              default = "google";
+            };
 
             extensions = {
               force = true;
