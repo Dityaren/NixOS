@@ -1,7 +1,0 @@
-{
-  "refreshInterval": 5000,
-  "iconColor": "none",
-  "statusState": "running-only",
-  "activeColor": "success",
-  "inactiveColor": "error"
-}
