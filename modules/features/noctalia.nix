@@ -10,7 +10,7 @@
     let
       noctalia = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
-      noctaliaConfig = "${vars.flakeRoot}/modules/features/noctalia/settings.json";
+      noctaliaConfig = ./noctalia/settings.json;
     in
     {
       environment.systemPackages = [
@@ -20,50 +20,113 @@
           name = "noctalia-export";
 
           runtimeInputs = [
-            pkgs.coreutils
-            pkgs.gnugrep
             noctalia
+            pkgs.coreutils
+            pkgs.jq
           ];
 
           text = ''
             set -euo pipefail
 
-            SOURCE="$HOME/.config/noctalia/settings.json"
-            DEST="${noctaliaConfig}"
+            DEST="${vars.flakeRoot}modules/features/noctalia/settings.json"
+            DEST_DIR="$(dirname "$DEST")"
 
-            echo "Exporting Noctalia Legacy configuration..."
+            RAW_TMP="$(mktemp "$DEST_DIR/.noctalia-settings.XXXXXX")"
+            JSON_TMP="$(mktemp "$DEST_DIR/.noctalia-settings.XXXXXX")"
+
+            cleanup() {
+              rm -f "$RAW_TMP" "$JSON_TMP"
+            }
+
+            trap cleanup EXIT
+
+            echo "Exporting current Noctalia settings..."
             echo
 
-            if [ ! -e "$SOURCE" ]; then
-              echo "Error: Noctalia configuration not found:"
-              echo "  $SOURCE"
+            # ------------------------------------------------------------
+            # Check that Noctalia is running
+            # ------------------------------------------------------------
+
+            if ! noctalia-shell ipc call state all >/dev/null 2>&1; then
+              echo "Error: Noctalia Shell is not running or IPC is unavailable."
               echo
-              echo "Make sure Noctalia Shell is running and has created its configuration."
+              echo "Start Noctalia Shell before running noctalia-export."
               exit 1
             fi
 
-            if [ -L "$SOURCE" ]; then
-              echo "Current configuration is Nix-managed:"
-              echo "  $SOURCE -> $(readlink "$SOURCE")"
+            # ------------------------------------------------------------
+            # Get the current runtime state
+            # ------------------------------------------------------------
+
+            echo "Reading settings from Noctalia..."
+
+            if ! noctalia-shell ipc call state all > "$RAW_TMP"; then
               echo
+              echo "Error: Failed to retrieve Noctalia state."
+              echo "Existing configuration was NOT changed."
+              exit 1
             fi
 
-            mkdir -p "$(dirname "$DEST")"
+            # ------------------------------------------------------------
+            # Make sure .settings exists and is an object
+            # ------------------------------------------------------------
 
-            cp --dereference "$SOURCE" "$DEST"
+            if ! jq -e '.settings | type == "object"' "$RAW_TMP" >/dev/null; then
+              echo
+              echo "Error: Noctalia returned an invalid settings object."
+              echo "Expected .settings to be a JSON object."
+              echo
+              echo "Existing configuration was NOT changed."
+              exit 1
+            fi
 
-            echo "Configuration exported successfully."
+            # ------------------------------------------------------------
+            # Extract and pretty-print the settings
+            # ------------------------------------------------------------
+
+            if ! jq '.settings' "$RAW_TMP" > "$JSON_TMP"; then
+              echo
+              echo "Error: Failed to generate settings.json."
+              echo "Existing configuration was NOT changed."
+              exit 1
+            fi
+
+            # ------------------------------------------------------------
+            # Final JSON validation
+            # ------------------------------------------------------------
+
+            if ! jq empty "$JSON_TMP" >/dev/null; then
+              echo
+              echo "Error: Generated settings.json is invalid JSON."
+              echo "Existing configuration was NOT changed."
+              exit 1
+            fi
+
+            # ------------------------------------------------------------
+            # Replace the declarative source
+            # ------------------------------------------------------------
+
+            mv -f "$JSON_TMP" "$DEST"
+
             echo
-            echo "  Source:"
-            echo "    $SOURCE"
+            echo "Noctalia configuration exported successfully."
             echo
-            echo "  Destination:"
-            echo "    $DEST"
+            echo "  $DEST"
             echo
-            echo "The exported configuration is now part of your NixOS configuration."
+            echo "The configuration was:"
+            echo "  ✓ Retrieved from the running Noctalia instance"
+            echo "  ✓ Validated as JSON"
+            echo "  ✓ Validated as a JSON object"
+            echo "  ✓ Pretty-printed with jq"
+            echo "  ✓ Atomically written to the NixOS dotfiles"
             echo
-            echo "Rebuild with:"
-            echo "  sudo nixos-rebuild switch --flake ${vars.flakeRoot}#${vars.hostname}"
+            echo "The Home Manager configuration has NOT been rebuilt."
+            echo "Run nixos-rebuild when you want this configuration"
+            echo "to become the new declarative state."
+            echo
+            echo "Review the changes with:"
+            echo
+            echo "  git diff -- modules/features/noctalia/settings.json"
           '';
         })
       ];
@@ -76,7 +139,7 @@
         programs.noctalia-shell = {
           enable = true;
 
-          settings = ./noctalia/settings.json;
+          settings = noctaliaConfig;
         };
       };
     };
