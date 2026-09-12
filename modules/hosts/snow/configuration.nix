@@ -16,7 +16,6 @@
         self.nixosModules.home-manager
         self.nixosModules.niri
         self.nixosModules.nvidia
-        #self.nixosModules.sddm-astronaut
         self.nixosModules.ly
         self.nixosModules.xdg
         self.nixosModules.nixvim
