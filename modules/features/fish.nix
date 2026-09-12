@@ -1,4 +1,5 @@
 { pkgs, ... }:
+
 {
   flake.nixosModules.fish =
     {
@@ -18,8 +19,16 @@
       ];
 
       home-manager.users.${vars.username} = {
+        # ============================================================
+        # Fish
+        # ============================================================
+
         programs.fish = {
           enable = true;
+
+          # ----------------------------------------------------------
+          # Aliases
+          # ----------------------------------------------------------
 
           shellAliases = {
             initdirenv = ''
@@ -38,55 +47,174 @@
               echo "Created and allowed .envrc"
             '';
 
+            # Files
             ls = "eza --icons";
             ll = "eza -lah --icons";
             la = "eza -a --icons";
             lt = "eza --tree --icons";
 
+            # CLI replacements
             cat = "bat";
             grep = "rg";
             find = "fd";
+
+            # Manual fuzzy finder
             f = "fzf";
 
+            # Editors
             vi = "nvim";
             vim = "nvim";
 
+            # Git
             gs = "git status";
             ga = "git add";
             gc = "git commit";
             gp = "git push";
             gl = "git log --oneline --graph --decorate";
 
+            # Navigation
             c = "clear";
             ".." = "cd ..";
             "..." = "cd ../..";
           };
 
+          # ----------------------------------------------------------
+          # Abbreviations
+          # ----------------------------------------------------------
+
           shellAbbrs = {
             rebuild = "sudo nixos-rebuild switch --flake ${vars.flakeRoot}#${vars.hostname}";
+
             update = "nix flake update --flake ${vars.flakeRoot}";
           };
+
+          # ----------------------------------------------------------
+          # Interactive initialization
+          # ----------------------------------------------------------
 
           interactiveShellInit = ''
             set -g fish_greeting
 
-            # Vi-style Fish keybindings.
+            # ========================================================
+            # Vi-style Fish keybindings
+            # ========================================================
+
             fish_vi_key_bindings
 
-            # Default editors and pager.
+            # ========================================================
+            # Environment
+            # ========================================================
+
             set -gx EDITOR nvim
             set -gx VISUAL nvim
+
             set -gx PAGER less
             set -gx LESS "-R"
 
             # Prevent devenv from displaying its separate TUI.
             set -gx DEVENV_TUI false
 
-            # Manually initialize Starship.
-            # `enableFishIntegration` is unavailable in this
-            # Home Manager version.
+            # ========================================================
+            # Starship
+            #
+            # enableFishIntegration is unavailable in the current
+            # Home Manager version, so initialize it manually.
+            # ========================================================
+
             starship init fish | source
+
+            # ========================================================
+            # fzf
+            #
+            # Home Manager's automatic Fish integration is disabled
+            # below. These widgets are deliberately implemented here
+            # so preview commands cannot be confused with fzf options.
+            # ========================================================
+
+            # --------------------------------------------------------
+            # Ctrl+T
+            #
+            # Search files and insert the selected path into the
+            # current command line.
+            # --------------------------------------------------------
+
+            function fzf_file_widget
+              set -l selected (
+                fd \
+                  --type f \
+                  --hidden \
+                  --follow \
+                  --exclude .git |
+                fzf \
+                  --preview 'bat --color=always --style=numbers --line-range=:300 {}'
+              )
+
+              if test -n "$selected"
+                commandline -it -- "$selected"
+              end
+
+              commandline -f repaint
+            end
+
+            # --------------------------------------------------------
+            # Alt+C
+            #
+            # Search directories and change into the selected one.
+            # --------------------------------------------------------
+
+            function fzf_directory_widget
+              set -l selected (
+                fd \
+                  --type d \
+                  --hidden \
+                  --follow \
+                  --exclude .git |
+                fzf \
+                  --preview 'eza --tree --icons --level=2 {}'
+              )
+
+              if test -n "$selected"
+                cd -- "$selected"
+              end
+
+              commandline -f repaint
+            end
+
+            # --------------------------------------------------------
+            # Ctrl+R
+            #
+            # Search Fish command history and replace the current
+            # command line with the selected command.
+            # --------------------------------------------------------
+
+            function fzf_history_widget
+              set -l selected (
+                history |
+                fzf --tac
+              )
+
+              if test -n "$selected"
+                commandline -- "$selected"
+              end
+
+              commandline -f repaint
+            end
+
+            # ========================================================
+            # fzf keybindings
+            #
+            # Bind in Fish's insert mode because Fish is configured
+            # with vi keybindings.
+            # ========================================================
+
+            bind -M insert \ct fzf_file_widget
+            bind -M insert \ec fzf_directory_widget
+            bind -M insert \cr fzf_history_widget
           '';
+
+          # ----------------------------------------------------------
+          # Fish plugins
+          # ----------------------------------------------------------
 
           plugins = with pkgs.fishPlugins; [
             {
@@ -111,109 +239,74 @@
           ];
         };
 
+        # ============================================================
+        # fzf
+        # ============================================================
+
         programs.fzf = {
           enable = true;
-          enableFishIntegration = true;
 
-          # ─────────────────────────────────────────
-          # File discovery
-          # ─────────────────────────────────────────
+          # IMPORTANT:
+          #
+          # Do not let Home Manager generate its Fish widgets.
+          # We define Ctrl+T / Alt+C / Ctrl+R ourselves above.
+          #
+          enableFishIntegration = false;
+
+          # ----------------------------------------------------------
+          # Default file command
+          # ----------------------------------------------------------
 
           defaultCommand = "fd --type f --hidden --follow --exclude .git";
 
-          fileWidget = {
-            command = "fd --type f --hidden --follow --exclude .git";
-
-            options = [
-              "--preview"
-              "bat --color=always --style=numbers --line-range=:300 {}"
-            ];
-          };
-
-          # ─────────────────────────────────────────
-          # Directory discovery
-          # ─────────────────────────────────────────
-
-          changeDirWidget = {
-            command = "fd --type d --hidden --follow --exclude .git";
-          };
-
-          # ─────────────────────────────────────────
-          # Fuzzy finder appearance
-          # Catppuccin-inspired palette
-          # ─────────────────────────────────────────
+          # ----------------------------------------------------------
+          # Kanagawa styling
+          #
+          # This becomes FZF_DEFAULT_OPTS and is inherited by all
+          # three manually-defined Fish widgets.
+          #
+          # No preview commands are placed here.
+          # No bat options are placed here.
+          # Therefore fzf never gets a stray --color=always.
+          # ----------------------------------------------------------
 
           defaultOptions = [
             "--height=60%"
             "--layout=reverse"
             "--border=rounded"
+            "--info=inline"
+            "--padding=1"
 
             "--prompt=❯ "
             "--pointer=▶"
             "--marker=✓"
 
-            "--info=inline"
-
-            "--padding=1"
-
-            # Catppuccin Mocha-inspired colors.
-            #
-            # bg       = base
-            # bg+      = surface0
-            # fg       = text
-            # fg+      = text
-            # hl       = mauve
-            # hl+      = mauve
-            # border   = surface1
-            # prompt   = mauve
-            # pointer  = lavender
-            # marker   = green
-            # spinner  = mauve
-            # header   = subtext0
-            "--color=bg:#1e1e2e,bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4"
-            "--color=hl:#cba6f7,hl+:#cba6f7"
-            "--color=border:#45475a"
-            "--color=prompt:#cba6f7"
-            "--color=pointer:#b4befe"
-            "--color=marker:#a6e3a1"
-            "--color=spinner:#cba6f7"
-            "--color=header:#a6adc8"
-            "--color=info:#89b4fa"
-            "--color=query:#f5e0e8"
+            # Kanagawa
+            "--color=bg:#16161D,bg+:#1F1F28"
+            "--color=fg:#DCD7BA,fg+:#DCD7BA"
+            "--color=hl:#7E9CD8,hl+:#7E9CD8"
+            "--color=border:#2A2A37"
+            "--color=prompt:#7E9CD8"
+            "--color=pointer:#DCA561"
+            "--color=marker:#6A9589"
+            "--color=spinner:#7FB4CA"
+            "--color=header:#727169"
+            "--color=info:#727169"
+            "--color=query:#DCD7BA"
           ];
-
-          historyWidget = {
-            options = [
-              "--height=60%"
-              "--layout=reverse"
-              "--border=rounded"
-
-              "--prompt=❯ "
-              "--pointer=▶"
-              "--marker=✓"
-              "--info=inline"
-
-              "--color=bg:#1e1e2e,bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4"
-              "--color=hl:#cba6f7,hl+:#cba6f7"
-              "--color=border:#45475a"
-              "--color=prompt:#cba6f7"
-              "--color=pointer:#b4befe"
-              "--color=marker:#a6e3a1"
-              "--color=spinner:#cba6f7"
-              "--color=header:#a6adc8"
-              "--color=info:#89b4fa"
-              "--color=query:#f5e0e8"
-            ];
-          };
         };
+
+        # ============================================================
+        # Starship
+        # ============================================================
 
         programs.starship = {
           enable = true;
 
           settings = {
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # General
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             add_newline = true;
 
@@ -234,9 +327,9 @@
               "$character"
             ];
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # NixOS
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             os = {
               disabled = false;
@@ -248,9 +341,9 @@
               };
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # User / hostname
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             username = {
               show_always = false;
@@ -265,9 +358,9 @@
               format = "on [$hostname]($style) ";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Directory
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             directory = {
               style = "bold blue";
@@ -277,9 +370,9 @@
               read_only = " 󰌾";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Git
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             git_branch = {
               symbol = "󰘬 ";
@@ -304,9 +397,9 @@
               deleted = "✘$count";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Nix / devenv
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             nix_shell = {
               symbol = " ";
@@ -318,9 +411,9 @@
               unknown_msg = "shell";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Node.js
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             nodejs = {
               symbol = " ";
@@ -328,9 +421,9 @@
               format = "via [$symbol$version]($style) ";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Rust
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             rust = {
               symbol = " ";
@@ -338,9 +431,9 @@
               format = "via [$symbol$version]($style) ";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Python
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             python = {
               symbol = " ";
@@ -348,9 +441,9 @@
               format = "via [$symbol$version]($style) ";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Docker
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             docker_context = {
               symbol = " ";
@@ -358,9 +451,9 @@
               format = "via [$symbol$context]($style) ";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Command duration
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             cmd_duration = {
               min_time = 2000;
@@ -368,9 +461,9 @@
               format = "took [$duration]($style) ";
             };
 
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
             # Prompt character
-            # ─────────────────────────────────────────
+            # --------------------------------------------------------
 
             character = {
               success_symbol = "[❯](bold green)";
