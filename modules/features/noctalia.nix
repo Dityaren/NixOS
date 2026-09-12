@@ -28,7 +28,7 @@
           text = ''
             set -euo pipefail
 
-            DEST="${vars.flakeRoot}modules/features/noctalia/settings.json"
+            DEST="${vars.flakeRoot}/modules/features/noctalia/settings.json"
             DEST_DIR="$(dirname "$DEST")"
 
             RAW_TMP="$(mktemp "$DEST_DIR/.noctalia-settings.XXXXXX")"
@@ -43,20 +43,12 @@
             echo "Exporting current Noctalia settings..."
             echo
 
-            # ------------------------------------------------------------
-            # Check that Noctalia is running
-            # ------------------------------------------------------------
-
             if ! noctalia-shell ipc call state all >/dev/null 2>&1; then
               echo "Error: Noctalia Shell is not running or IPC is unavailable."
               echo
               echo "Start Noctalia Shell before running noctalia-export."
               exit 1
             fi
-
-            # ------------------------------------------------------------
-            # Get the current runtime state
-            # ------------------------------------------------------------
 
             echo "Reading settings from Noctalia..."
 
@@ -67,10 +59,6 @@
               exit 1
             fi
 
-            # ------------------------------------------------------------
-            # Make sure .settings exists and is an object
-            # ------------------------------------------------------------
-
             if ! jq -e '.settings | type == "object"' "$RAW_TMP" >/dev/null; then
               echo
               echo "Error: Noctalia returned an invalid settings object."
@@ -80,20 +68,12 @@
               exit 1
             fi
 
-            # ------------------------------------------------------------
-            # Extract and pretty-print the settings
-            # ------------------------------------------------------------
-
             if ! jq '.settings' "$RAW_TMP" > "$JSON_TMP"; then
               echo
               echo "Error: Failed to generate settings.json."
               echo "Existing configuration was NOT changed."
               exit 1
             fi
-
-            # ------------------------------------------------------------
-            # Final JSON validation
-            # ------------------------------------------------------------
 
             if ! jq empty "$JSON_TMP" >/dev/null; then
               echo
@@ -102,10 +82,6 @@
               exit 1
             fi
 
-            # ------------------------------------------------------------
-            # Replace the declarative source
-            # ------------------------------------------------------------
-
             mv -f "$JSON_TMP" "$DEST"
 
             echo
@@ -113,20 +89,12 @@
             echo
             echo "  $DEST"
             echo
-            echo "The configuration was:"
-            echo "  ✓ Retrieved from the running Noctalia instance"
-            echo "  ✓ Validated as JSON"
-            echo "  ✓ Validated as a JSON object"
-            echo "  ✓ Pretty-printed with jq"
-            echo "  ✓ Atomically written to the NixOS dotfiles"
-            echo
-            echo "The Home Manager configuration has NOT been rebuilt."
-            echo "Run nixos-rebuild when you want this configuration"
-            echo "to become the new declarative state."
-            echo
             echo "Review the changes with:"
             echo
             echo "  git diff -- modules/features/noctalia/settings.json"
+            echo
+            echo "Run nixos-rebuild when you want this configuration"
+            echo "to become the new declarative state."
           '';
         })
       ];
@@ -138,9 +106,24 @@
 
         programs.noctalia-shell = {
           enable = true;
-
           settings = noctaliaConfig;
         };
+
+        home.activation.restartNoctalia = inputs.home-manager.lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+          if command -v noctalia-shell >/dev/null 2>&1; then
+            if noctalia-shell ipc call state all >/dev/null 2>&1; then
+              echo "Restarting Noctalia Shell..."
+
+              pkill -x noctalia-shell || true
+
+              sleep 0.3
+
+              if command -v niri >/dev/null 2>&1; then
+                niri msg action spawn -- noctalia-shell >/dev/null 2>&1 || true
+              fi
+            fi
+          fi
+        '';
       };
     };
 }
