@@ -7,6 +7,67 @@
       pkgs,
       ...
     }:
+    let
+      modifier = "Mod4";
+
+      wallpaperPicker = pkgs.writeShellScriptBin "wallpaper-picker" ''
+        set -e
+
+        wallpaper_dir="$HOME/Pictures/Wallpapers"
+        current_wallpaper="$HOME/.config/i3/current-wallpaper"
+
+        mkdir -p "$wallpaper_dir"
+        mkdir -p "$(dirname "$current_wallpaper")"
+
+        if [ ! -d "$wallpaper_dir" ]; then
+          notify-send "Wallpaper Picker" "Wallpaper directory not found"
+          exit 1
+        fi
+
+        selected="$(
+          find "$wallpaper_dir" -type f \
+            \( \
+              -iname "*.jpg" \
+              -o -iname "*.jpeg" \
+              -o -iname "*.png" \
+              -o -iname "*.webp" \
+              -o -iname "*.bmp" \
+            \) \
+          | sort \
+          | while read -r file; do
+              printf '%s\t%s\n' "$(basename "$file")" "$file"
+            done \
+          | ${pkgs.rofi}/bin/rofi \
+              -dmenu \
+              -i \
+              -p "Wallpaper" \
+              -no-custom \
+              -display-columns 1 \
+              -theme-str 'window { width: 50%; } listview { lines: 12; }'
+        )"
+
+        [ -z "$selected" ] && exit 0
+
+        wallpaper="''${selected#*$'\t'}"
+
+        if [ ! -f "$wallpaper" ]; then
+          notify-send "Wallpaper Picker" "Selected wallpaper no longer exists"
+          exit 1
+        fi
+
+        ln -sfn "$wallpaper" "$current_wallpaper"
+
+        ${pkgs.feh}/bin/feh \
+          --no-fehbg \
+          --bg-fill \
+          "$wallpaper"
+
+        notify-send \
+          -t 1500 \
+          "Wallpaper" \
+          "$(basename "$wallpaper")"
+      '';
+    in
     {
       services.xserver = {
         enable = true;
@@ -19,8 +80,13 @@
 
       environment.systemPackages = with pkgs; [
         rofi
+        feh
+        brightnessctl
+        i3status-rust
         xclip
-        xorg.xrandr
+        xsetroot
+        libnotify
+        wallpaperPicker
       ];
 
       home-manager.users.${vars.username} = {
@@ -28,15 +94,14 @@
           enable = true;
 
           config = {
-            modifier = "Mod4";
+            inherit modifier;
 
             terminal = "alacritty";
-
             menu = "rofi -show drun";
 
             fonts = {
               names = [ "JetBrainsMono Nerd Font" ];
-              size = 11.0;
+              size = 10.0;
             };
 
             gaps = {
@@ -50,6 +115,11 @@
               titlebar = false;
             };
 
+            floating = {
+              border = 2;
+              titlebar = false;
+            };
+
             focus = {
               followMouse = false;
               mouseWarping = false;
@@ -59,105 +129,309 @@
             workspaceLayout = "default";
 
             keybindings = {
-              "$mod+Return" = "exec alacritty";
-              "$mod+d" = "exec rofi -show drun";
+              # Applications
+              "${modifier}+Return" = "exec alacritty";
 
-              "$mod+q" = "kill";
-              "$mod+f" = "fullscreen toggle";
-              "$mod+Shift+space" = "floating toggle";
-              "$mod+space" = "focus mode_toggle";
+              "${modifier}+d" = "exec rofi -show drun";
 
-              "$mod+h" = "focus left";
-              "$mod+j" = "focus down";
-              "$mod+k" = "focus up";
-              "$mod+l" = "focus right";
+              "${modifier}+Shift+d" = "exec rofi -show run";
 
-              "$mod+Shift+h" = "move left";
-              "$mod+Shift+j" = "move down";
-              "$mod+Shift+k" = "move up";
-              "$mod+Shift+l" = "move right";
+              # Wallpaper
+              "${modifier}+Shift+p" = "exec wallpaper-picker";
 
-              "$mod+b" = "split horizontal";
-              "$mod+v" = "split vertical";
+              # Window management
+              "${modifier}+q" = "kill";
 
-              "$mod+s" = "layout stacking";
-              "$mod+w" = "layout tabbed";
-              "$mod+e" = "layout toggle split";
+              "${modifier}+f" = "fullscreen toggle";
 
-              "$mod+r" = "mode resize";
+              "${modifier}+Shift+space" = "floating toggle";
 
-              "$mod+1" = "workspace number 1";
-              "$mod+2" = "workspace number 2";
-              "$mod+3" = "workspace number 3";
-              "$mod+4" = "workspace number 4";
-              "$mod+5" = "workspace number 5";
-              "$mod+6" = "workspace number 6";
-              "$mod+7" = "workspace number 7";
-              "$mod+8" = "workspace number 8";
-              "$mod+9" = "workspace number 9";
-              "$mod+0" = "workspace number 10";
+              "${modifier}+space" = "focus mode_toggle";
 
-              "$mod+Shift+1" = "move container to workspace number 1";
-              "$mod+Shift+2" = "move container to workspace number 2";
-              "$mod+Shift+3" = "move container to workspace number 3";
-              "$mod+Shift+4" = "move container to workspace number 4";
-              "$mod+Shift+5" = "move container to workspace number 5";
-              "$mod+Shift+6" = "move container to workspace number 6";
-              "$mod+Shift+7" = "move container to workspace number 7";
-              "$mod+Shift+8" = "move container to workspace number 8";
-              "$mod+Shift+9" = "move container to workspace number 9";
-              "$mod+Shift+0" = "move container to workspace number 10";
+              # Focus
+              "${modifier}+h" = "focus left";
 
-              "$mod+Shift+r" = "reload";
+              "${modifier}+j" = "focus down";
 
-              "$mod+Shift+q" = "exec i3-msg exit";
+              "${modifier}+k" = "focus up";
+
+              "${modifier}+l" = "focus right";
+
+              # Focus with arrows
+              "${modifier}+Left" = "focus left";
+
+              "${modifier}+Down" = "focus down";
+
+              "${modifier}+Up" = "focus up";
+
+              "${modifier}+Right" = "focus right";
+
+              # Move containers
+              "${modifier}+Shift+h" = "move left";
+
+              "${modifier}+Shift+j" = "move down";
+
+              "${modifier}+Shift+k" = "move up";
+
+              "${modifier}+Shift+l" = "move right";
+
+              # Move containers with arrows
+              "${modifier}+Shift+Left" = "move left";
+
+              "${modifier}+Shift+Down" = "move down";
+
+              "${modifier}+Shift+Up" = "move up";
+
+              "${modifier}+Shift+Right" = "move right";
+
+              # Split
+              "${modifier}+b" = "split horizontal";
+
+              "${modifier}+v" = "split vertical";
+
+              # Layout
+              "${modifier}+s" = "layout stacking";
+
+              "${modifier}+w" = "layout tabbed";
+
+              "${modifier}+e" = "layout toggle split";
+
+              # Resize
+              "${modifier}+r" = "mode resize";
+
+              # Workspaces
+              "${modifier}+1" = "workspace number 1";
+
+              "${modifier}+2" = "workspace number 2";
+
+              "${modifier}+3" = "workspace number 3";
+
+              "${modifier}+4" = "workspace number 4";
+
+              "${modifier}+5" = "workspace number 5";
+
+              "${modifier}+6" = "workspace number 6";
+
+              "${modifier}+7" = "workspace number 7";
+
+              "${modifier}+8" = "workspace number 8";
+
+              "${modifier}+9" = "workspace number 9";
+
+              "${modifier}+0" = "workspace number 10";
+
+              # Move to workspaces
+              "${modifier}+Shift+1" = "move container to workspace number 1";
+
+              "${modifier}+Shift+2" = "move container to workspace number 2";
+
+              "${modifier}+Shift+3" = "move container to workspace number 3";
+
+              "${modifier}+Shift+4" = "move container to workspace number 4";
+
+              "${modifier}+Shift+5" = "move container to workspace number 5";
+
+              "${modifier}+Shift+6" = "move container to workspace number 6";
+
+              "${modifier}+Shift+7" = "move container to workspace number 7";
+
+              "${modifier}+Shift+8" = "move container to workspace number 8";
+
+              "${modifier}+Shift+9" = "move container to workspace number 9";
+
+              "${modifier}+Shift+0" = "move container to workspace number 10";
+
+              # i3 control
+              "${modifier}+Shift+r" = "restart";
+
+              "${modifier}+Shift+q" = "exec i3-msg exit";
+
+              # Audio
+              "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
+
+              "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
+
+              "XF86AudioMute" = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+
+              # Brightness
+              "XF86MonBrightnessUp" = "exec brightnessctl set 5%+";
+
+              "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
             };
 
             modes = {
               resize = {
                 "h" = "resize shrink width 10 px or 10 ppt";
+
                 "j" = "resize grow height 10 px or 10 ppt";
+
                 "k" = "resize shrink height 10 px or 10 ppt";
+
                 "l" = "resize grow width 10 px or 10 ppt";
 
                 "Left" = "resize shrink width 10 px or 10 ppt";
+
                 "Down" = "resize grow height 10 px or 10 ppt";
+
                 "Up" = "resize shrink height 10 px or 10 ppt";
+
                 "Right" = "resize grow width 10 px or 10 ppt";
 
                 "Return" = "mode default";
+
                 "Escape" = "mode default";
               };
             };
 
+            colors = {
+              focused = {
+                border = "#89b4fa";
+                background = "#89b4fa";
+                text = "#11111b";
+                indicator = "#89b4fa";
+                childBorder = "#89b4fa";
+              };
+
+              focusedInactive = {
+                border = "#313244";
+                background = "#181825";
+                text = "#cdd6f4";
+                indicator = "#313244";
+                childBorder = "#313244";
+              };
+
+              unfocused = {
+                border = "#242432";
+                background = "#11111b";
+                text = "#7f849c";
+                indicator = "#242432";
+                childBorder = "#242432";
+              };
+
+              urgent = {
+                border = "#f38ba8";
+                background = "#f38ba8";
+                text = "#11111b";
+                indicator = "#f38ba8";
+                childBorder = "#f38ba8";
+              };
+            };
+
+            bars = [
+              {
+                position = "bottom";
+
+                statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-main.toml";
+
+                workspaceButtons = true;
+                workspaceNumbers = true;
+                trayOutput = "primary";
+
+                fonts = {
+                  names = [ "JetBrainsMono Nerd Font" ];
+                  size = 10.0;
+                };
+
+                colors = {
+                  background = "#11111b";
+                  statusline = "#cdd6f4";
+
+                  focusedWorkspace = {
+                    border = "#89b4fa";
+                    background = "#89b4fa";
+                    text = "#11111b";
+                  };
+
+                  activeWorkspace = {
+                    border = "#313244";
+                    background = "#181825";
+                    text = "#cdd6f4";
+                  };
+
+                  inactiveWorkspace = {
+                    border = "#11111b";
+                    background = "#11111b";
+                    text = "#7f849c";
+                  };
+
+                  urgentWorkspace = {
+                    border = "#f38ba8";
+                    background = "#f38ba8";
+                    text = "#11111b";
+                  };
+                };
+              }
+            ];
+
             startup = [
               {
                 command = "xsetroot -cursor_name left_ptr";
+
+                notification = false;
+              }
+
+              {
+                command = "test -e $HOME/.config/i3/current-wallpaper && feh --no-fehbg --bg-fill $HOME/.config/i3/current-wallpaper";
+
                 notification = false;
               }
             ];
           };
 
           extraConfig = ''
-            # Do not automatically focus newly opened applications
+            focus_follows_mouse no
+            mouse_warping none
             focus_on_window_activation smart
 
-            # Automatically place dialogs in floating mode
             for_window [window_type="dialog"] floating enable
             for_window [window_type="utility"] floating enable
 
-            # Development workspaces
-            workspace 1 output primary
-            workspace 2 output primary
-            workspace 3 output primary
-            workspace 4 output primary
-
-            # Prevent accidental mouse focus changes
-            focus_follows_mouse no
+            default_border pixel 2
+            default_floating_border pixel 2
           '';
         };
 
-        xdg.configFile."i3/config".force = true;
+        programs.i3status-rust = {
+          enable = true;
+
+          bars.main = {
+            settings = {
+              theme = {
+                theme = "plain";
+              };
+
+              icons = {
+                icons = "awesome6";
+              };
+            };
+
+            blocks = [
+              {
+                block = "cpu";
+                interval = 2;
+                format = " CPU $utilization ";
+              }
+
+              {
+                block = "memory";
+                interval = 2;
+                format = " RAM $mem_used/$mem_total ";
+              }
+
+              {
+                block = "battery";
+                interval = 10;
+                format = " BAT $percentage ";
+              }
+
+              {
+                block = "time";
+                interval = 1;
+                format = " $timestamp.datetime(f:'%H:%M') ";
+              }
+            ];
+          };
+        };
       };
     };
 }

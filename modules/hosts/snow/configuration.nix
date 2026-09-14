@@ -126,6 +126,9 @@
 
       environment = {
         systemPackages = with pkgs; [
+          nodejs
+          pnpm
+          kitty
           obsidian
           jq
           temurin-bin
