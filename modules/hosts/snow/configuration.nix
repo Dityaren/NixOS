@@ -33,6 +33,17 @@
 
       ];
 
+      programs.nix-ld.enable = true;
+      programs.nix-ld.libraries = with pkgs; [
+        nodejs
+        pnpm
+      ];
+
+      programs.direnv = {
+        enable = true;
+        nix-direnv.enable = true;
+      };
+
       nix = {
         settings = {
           experimental-features = [
@@ -119,22 +130,15 @@
           RUN+="${pkgs.coreutils}/bin/chmod 664 /sys%p/conservation_mode"
       '';
 
-      programs.direnv = {
-        enable = true;
-        nix-direnv.enable = true;
-      };
-
       environment = {
         systemPackages = with pkgs; [
-          nodejs
-          pnpm
+          devenv
           kitty
           obsidian
           jq
           temurin-bin
           easyeffects
           sioyek
-          devenv
           obs-studio
           vim
           wget
