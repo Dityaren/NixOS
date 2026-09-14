@@ -44,20 +44,6 @@
         nix-direnv.enable = true;
       };
 
-      nix = {
-        settings = {
-          experimental-features = [
-            "nix-command"
-            "flakes"
-          ];
-          trusted-users = [
-            "root"
-            "${vars.username}"
-          ];
-        };
-
-      };
-
       nixpkgs.config.allowUnfree = true;
 
       boot = {

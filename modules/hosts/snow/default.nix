@@ -6,7 +6,7 @@
 
     modules = [
       self.nixosModules.hostConfiguration
-      self.nixosModules.cachix
+      self.nixosModules.nixSettings
     ];
   };
 }
