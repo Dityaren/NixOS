@@ -83,7 +83,6 @@
         };
 
         extraPackages = with pkgs; [
-
           ripgrep
           fd
 
@@ -96,7 +95,8 @@
           stylua
 
           nodejs
-          typescript-language-server
+          typescript
+          vtsls
           tailwindcss-language-server
           vscode-langservers-extracted
           prettier
@@ -118,7 +118,6 @@
           gcc
           cmake
           gnumake
-
           lldb
         ];
 
@@ -134,6 +133,34 @@
             source = "if_many";
           };
         };
+
+        extraConfigLua = ''
+          _G.typescript_goto_file = function()
+            local ft = vim.bo.filetype
+
+            local typescript_filetypes = {
+              javascript = true,
+              javascriptreact = true,
+              typescript = true,
+              typescriptreact = true,
+            }
+
+            if not typescript_filetypes[ft] then
+              vim.cmd("normal! gf")
+              return
+            end
+
+            if #vim.lsp.get_clients({
+              bufnr = 0,
+              name = "vtsls",
+            }) == 0 then
+              vim.cmd("normal! gf")
+              return
+            end
+
+            vim.lsp.buf.definition()
+          end
+        '';
 
         plugins = {
 
@@ -405,8 +432,6 @@
             };
           };
 
-          lsp-lines.enable = true;
-
           lsp = {
             enable = true;
 
@@ -419,20 +444,31 @@
                     command = [ "nixfmt" ];
                   };
 
-                  nix = {
-                    flake = {
-                      autoArchive = true;
-                    };
-                  };
+                  nix.flake.autoArchive = true;
                 };
               };
 
               lua_ls.enable = true;
 
-              ts_ls.enable = true;
+              vtsls = {
+                enable = true;
+
+                settings = {
+                  typescript.tsdk = "${pkgs.typescript}/lib/node_modules/typescript/lib";
+
+                  "typescript.suggest.autoImports" = true;
+                  "typescript.suggest.paths" = true;
+                  "typescript.preferences.importModuleSpecifier" = "shortest";
+                  "typescript.preferences.includePackageJsonAutoImports" = "on";
+
+                  "javascript.suggest.autoImports" = true;
+                  "javascript.suggest.paths" = true;
+                  "javascript.preferences.importModuleSpecifier" = "shortest";
+                  "javascript.preferences.includePackageJsonAutoImports" = "on";
+                };
+              };
 
               tailwindcss.enable = true;
-
               eslint.enable = true;
               jsonls.enable = true;
               yamlls.enable = true;
@@ -440,61 +476,50 @@
               clangd = {
                 enable = true;
 
+                settings.clangd.fallbackFlags = [
+                  "-std=c++20"
+                ];
+              };
+
+              taplo.enable = true;
+
+              rust_analyzer = {
+                enable = true;
+
+                installRustc = false;
+                installCargo = false;
+
                 settings = {
-                  clangd = {
-                    fallbackFlags = [
-                      "-std=c++20"
-                    ];
+                  cargo = {
+                    allFeatures = true;
+                    buildScripts.enable = true;
+                  };
+
+                  procMacro.enable = true;
+
+                  checkOnSave.command = "clippy";
+
+                  inlayHints = {
+                    bindingModeHints.enable = true;
+                    closureCaptureHints.enable = true;
+                    closureReturnTypeHints.enable = "always";
+                    lifetimeElisionHints.enable = "always";
+                    typeHints.enable = true;
                   };
                 };
               };
-            };
-          };
 
-          lsp.servers.taplo.enable = true;
-
-          lsp.servers.rust_analyzer = {
-            enable = true;
-
-            installRustc = false;
-            installCargo = false;
-
-            settings = {
-              cargo = {
-                allFeatures = true;
-
-                buildScripts = {
-                  enable = true;
-                };
-              };
-
-              procMacro = {
+              emmet_ls = {
                 enable = true;
-              };
 
-              checkOnSave = {
-                command = "clippy";
-              };
-
-              inlayHints = {
-                bindingModeHints.enable = true;
-                closureCaptureHints.enable = true;
-                closureReturnTypeHints.enable = "always";
-                lifetimeElisionHints.enable = "always";
-                typeHints.enable = true;
+                filetypes = [
+                  "html"
+                  "css"
+                  "javascriptreact"
+                  "typescriptreact"
+                ];
               };
             };
-          };
-
-          lsp.servers.emmet_ls = {
-            enable = true;
-
-            filetypes = [
-              "html"
-              "css"
-              "javascriptreact"
-              "typescriptreact"
-            ];
           };
 
           blink-cmp = {
