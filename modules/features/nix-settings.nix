@@ -4,6 +4,7 @@
   flake.nixosModules.nixSettings =
     {
       vars,
+      ...
     }:
     {
       nix.settings = {
