@@ -578,7 +578,7 @@
 
                 tooltip = "??? why hover chrono??";
 
-                icon = "https://c.tenor.com/MYFOhiSPB6cAAAAC/tenor.gif";
+                icon = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2lkc3VmZTducW5kaDk1dmk5eGI3NHRnbzByaTZ0YzN2MnI1YzBieCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iExhaYid5FfeyK0XuI/giphy.gif";
               };
 
               display = {
