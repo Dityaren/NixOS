@@ -150,15 +150,19 @@
               return
             end
 
-            if #vim.lsp.get_clients({
+            local clients = vim.lsp.get_clients({
               bufnr = 0,
               name = "vtsls",
-            }) == 0 then
+            })
+
+            if #clients == 0 then
               vim.cmd("normal! gf")
               return
             end
 
-            vim.lsp.buf.definition()
+            vim.lsp.buf.definition({
+              reuse_win = true,
+            })
           end
         '';
 
@@ -453,9 +457,12 @@
               vtsls = {
                 enable = true;
 
-                settings = {
-                  typescript.tsdk = "${pkgs.typescript}/lib/node_modules/typescript/lib";
+                rootMarkers = [
+                  "tsconfig.json"
+                  "jsconfig.json"
+                ];
 
+                settings = {
                   "typescript.suggest.autoImports" = true;
                   "typescript.suggest.paths" = true;
                   "typescript.preferences.importModuleSpecifier" = "shortest";
@@ -465,6 +472,9 @@
                   "javascript.suggest.paths" = true;
                   "javascript.preferences.importModuleSpecifier" = "shortest";
                   "javascript.preferences.includePackageJsonAutoImports" = "on";
+
+                  "typescript.updateImportsOnFileMove.enabled" = "always";
+                  "javascript.updateImportsOnFileMove.enabled" = "always";
                 };
               };
 
@@ -535,6 +545,7 @@
 
                 menu = {
                   border = "rounded";
+
                   draw = {
                     treesitter = [
                       "lsp"
@@ -556,6 +567,16 @@
 
                 "<C-m>" = [
                   "accept"
+                  "fallback"
+                ];
+
+                "<Tab>" = [
+                  "select_next"
+                  "fallback"
+                ];
+
+                "<S-Tab>" = [
+                  "select_prev"
                   "fallback"
                 ];
               };
@@ -1055,6 +1076,13 @@
             mode = "n";
             action = "<cmd>lua vim.lsp.buf.definition()<CR>";
             options.desc = "Go to definition";
+          }
+
+          {
+            key = "gf";
+            mode = "n";
+            action = "<cmd>lua _G.typescript_goto_file()<CR>";
+            options.desc = "Go to file or import";
           }
 
           {
