@@ -29,7 +29,6 @@
         self.nixosModules.noctalia
         self.nixosModules.power-management
         self.nixosModules.tmux
-        self.nixosModules.i3wm
 
       ];
 
