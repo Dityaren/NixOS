@@ -118,7 +118,6 @@
 
       environment = {
         systemPackages = with pkgs; [
-          mendeley
           devenv
           kitty
           obsidian
