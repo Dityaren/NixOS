@@ -109,12 +109,6 @@
 
       programs.fish.enable = true;
 
-      services.udev.extraRules = ''
-        SUBSYSTEM=="platform", KERNEL=="VPC2004:00", \
-          RUN+="${pkgs.coreutils}/bin/chgrp lenovoctl /sys%p/conservation_mode", \
-          RUN+="${pkgs.coreutils}/bin/chmod 664 /sys%p/conservation_mode"
-      '';
-
       environment = {
         systemPackages = with pkgs; [
           devenv
