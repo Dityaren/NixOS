@@ -4,7 +4,7 @@
       steam = {
         enable = true;
         extraCompatPackages = [
-          pkgs.dwproton-bin-dwproton
+          pkgs.dwproton-bin
         ];
         remotePlay.openFirewall = true;
         dedicatedServer.openFirewall = true;
