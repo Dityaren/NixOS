@@ -35,8 +35,9 @@
 
           extraConfig = ''
             window-rule {
-                geometry-corner-radius 10
-                clip-to-geometry true
+                geometry-corner-radius 0
+                clip-to-geometry false
+                draw-border-with-background false
                 background-effect {
                     blur true
                     xray false
@@ -47,6 +48,8 @@
             }
             window-rule {
                 match app-id="^Alacritty$"
+                match app-id="^Zen Browser$"
+                match app-id="^Spotify$"
 
                 draw-border-with-background false
 
@@ -93,7 +96,7 @@
             };
 
             gestures = {
-              hot-corners.off = { };
+              # hot-corners.off = { };
             };
 
             layer-rule = {
@@ -102,10 +105,10 @@
 
             layout = {
               background-color = "transparent";
-              gaps = 0;
+              gaps = 15;
 
               focus-ring.off = { };
-              shadow.off = { };
+              # shadow.off = { };
 
               border = {
                 width = 0;
