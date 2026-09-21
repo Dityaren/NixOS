@@ -121,6 +121,67 @@
           lldb
         ];
 
+        highlight = {
+          Normal = {
+            bg = "none";
+          };
+
+          NormalFloat = {
+            bg = "none";
+          };
+
+          FloatBorder = {
+            fg = "#666666";
+            bg = "none";
+          };
+
+          CursorLine = {
+            bg = "#1f1f1f";
+          };
+
+          LineNr = {
+            fg = "#555555";
+          };
+
+          CursorLineNr = {
+            fg = "#aaaaaa";
+            bold = true;
+          };
+
+          SignColumn = {
+            bg = "none";
+          };
+
+          StatusLine = {
+            fg = "#aaaaaa";
+            bg = "#151515";
+          };
+
+          StatusLineNC = {
+            fg = "#555555";
+            bg = "#111111";
+          };
+
+          WinSeparator = {
+            fg = "#333333";
+          };
+
+          Pmenu = {
+            fg = "#aaaaaa";
+            bg = "#151515";
+          };
+
+          PmenuSel = {
+            fg = "#ffffff";
+            bg = "#333333";
+            bold = true;
+          };
+
+          Visual = {
+            bg = "#333333";
+          };
+        };
+
         diagnostic.settings = {
 
           virtual_text = false;
@@ -365,30 +426,17 @@
                 bottom_search = true;
                 command_palette = true;
                 long_message_to_split = true;
-                lsp_doc_border = true;
+                lsp_doc_border = false;
               };
 
               lsp = {
-                progress = {
-                  enabled = true;
-                };
-
-                hover = {
-                  enabled = true;
-                };
-
-                signature = {
-                  enabled = true;
-                };
+                progress.enabled = false;
+                hover.enabled = true;
+                signature.enabled = true;
               };
 
-              messages = {
-                enabled = true;
-              };
-
-              notify = {
-                enabled = true;
-              };
+              messages.enabled = false;
+              notify.enabled = false;
             };
           };
 
@@ -460,6 +508,8 @@
                 rootMarkers = [
                   "tsconfig.json"
                   "jsconfig.json"
+                  "package.json"
+                  ".git"
                 ];
 
                 settings = {
@@ -747,7 +797,97 @@
             enable = true;
             settings = {
               options = {
-                theme = "kanagawa";
+                theme = {
+                  normal = {
+                    a = {
+                      fg = "#111111";
+                      bg = "#aaaaaa";
+                      gui = "bold";
+                    };
+                    b = {
+                      fg = "#aaaaaa";
+                      bg = "#222222";
+                    };
+                    c = {
+                      fg = "#888888";
+                      bg = "#111111";
+                    };
+                  };
+                  insert = {
+                    a = {
+                      fg = "#111111";
+                      bg = "#aaaaaa";
+                      gui = "bold";
+                    };
+                    b = {
+                      fg = "#aaaaaa";
+                      bg = "#222222";
+                    };
+                    c = {
+                      fg = "#888888";
+                      bg = "#111111";
+                    };
+                  };
+                  visual = {
+                    a = {
+                      fg = "#111111";
+                      bg = "#aaaaaa";
+                      gui = "bold";
+                    };
+                    b = {
+                      fg = "#aaaaaa";
+                      bg = "#222222";
+                    };
+                    c = {
+                      fg = "#888888";
+                      bg = "#111111";
+                    };
+                  };
+                  replace = {
+                    a = {
+                      fg = "#111111";
+                      bg = "#aaaaaa";
+                      gui = "bold";
+                    };
+                    b = {
+                      fg = "#aaaaaa";
+                      bg = "#222222";
+                    };
+                    c = {
+                      fg = "#888888";
+                      bg = "#111111";
+                    };
+                  };
+                  command = {
+                    a = {
+                      fg = "#111111";
+                      bg = "#aaaaaa";
+                      gui = "bold";
+                    };
+                    b = {
+                      fg = "#aaaaaa";
+                      bg = "#222222";
+                    };
+                    c = {
+                      fg = "#888888";
+                      bg = "#111111";
+                    };
+                  };
+                  inactive = {
+                    a = {
+                      fg = "#666666";
+                      bg = "#111111";
+                    };
+                    b = {
+                      fg = "#555555";
+                      bg = "#111111";
+                    };
+                    c = {
+                      fg = "#444444";
+                      bg = "#111111";
+                    };
+                  };
+                };
                 globalstatus = true;
                 icons_enabled = true;
                 component_separators = {
