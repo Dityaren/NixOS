@@ -8,6 +8,7 @@
     }:
     {
       nix.settings = {
+        auto-optimise-store = true;
         extra-substituters = [
           "https://nix-community.cachix.org"
         ];
