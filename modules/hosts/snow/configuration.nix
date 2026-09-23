@@ -116,6 +116,7 @@
           obsidian
           jq
           temurin-bin
+          alsa-lib
           easyeffects
           sioyek
           obs-studio
