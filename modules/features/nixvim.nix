@@ -17,7 +17,7 @@
         colorschemes.kanagawa = {
           enable = true;
           settings = {
-            theme = "wave";
+            theme = "dragon";
             transparent = true;
             terminalColors = true;
             dimInactive = false;
@@ -29,23 +29,19 @@
         };
 
         opts = {
-
           number = true;
           relativenumber = true;
           cursorline = true;
           cursorlineopt = "both";
           signcolumn = "yes:1";
-
           scrolloff = 8;
           sidescrolloff = 8;
           smoothscroll = true;
-
           wrap = false;
           expandtab = true;
           shiftwidth = 2;
           tabstop = 2;
           softtabstop = 2;
-
           termguicolors = true;
           cmdheight = 0;
           laststatus = 3;
@@ -53,25 +49,19 @@
           showcmd = false;
           pumheight = 10;
           ruler = false;
-
           splitbelow = true;
           splitright = true;
           splitkeep = "screen";
-
           mouse = "a";
           clipboard = "unnamedplus";
-
           ignorecase = true;
           smartcase = true;
           hlsearch = true;
           incsearch = true;
-
           updatetime = 250;
           timeoutlen = 300;
-
           foldlevel = 99;
           foldlevelstart = 99;
-
           fillchars = {
             eob = " ";
           };
@@ -85,15 +75,12 @@
         extraPackages = with pkgs; [
           ripgrep
           fd
-
           nil
           nixfmt
           deadnix
           statix
-
           lua-language-server
           stylua
-
           nodejs
           typescript
           vtsls
@@ -102,88 +89,77 @@
           prettier
           yaml-language-server
           vscode-json-languageserver
-
           cargo
           rustc
           clippy
           rustfmt
           taplo
-
           cargo-watch
           cargo-edit
           cargo-nextest
           bacon
-
           clang-tools
           gcc
           cmake
           gnumake
           lldb
+          ueberzugpp
+          imagemagick
         ];
 
         highlight = {
           Normal = {
             bg = "none";
           };
-
+          NormalNC = {
+            bg = "none";
+          };
           NormalFloat = {
             bg = "none";
           };
-
           FloatBorder = {
             fg = "#666666";
             bg = "none";
           };
-
           CursorLine = {
             bg = "#1f1f1f";
           };
-
           LineNr = {
             fg = "#555555";
           };
-
           CursorLineNr = {
             fg = "#aaaaaa";
             bold = true;
           };
-
           SignColumn = {
             bg = "none";
           };
-
           StatusLine = {
             fg = "#aaaaaa";
-            bg = "#151515";
+            bg = "none";
           };
-
           StatusLineNC = {
             fg = "#555555";
-            bg = "#111111";
+            bg = "none";
           };
-
           WinSeparator = {
             fg = "#333333";
           };
-
           Pmenu = {
             fg = "#aaaaaa";
             bg = "#151515";
           };
-
           PmenuSel = {
             fg = "#ffffff";
             bg = "#333333";
             bold = true;
           };
-
           Visual = {
             bg = "#333333";
           };
         };
 
         diagnostic.settings = {
-
           virtual_text = false;
           underline = true;
           signs = true;
@@ -225,13 +201,21 @@
               reuse_win = true,
             })
           end
+
+          vim.api.nvim_create_autocmd("FileType", {
+            pattern = "netrw",
+            callback = function()
+              vim.keymap.set("n", "<Esc>", "<cmd>bd<CR>", {
+                buffer = true,
+                silent = true,
+              })
+            end,
+          })
         '';
 
         plugins = {
-
           mini = {
             enable = true;
-
             modules = {
               comment = {
                 mappings = {
@@ -240,57 +224,20 @@
                   comment_visual = "<leader>/";
                   textobject = "<leader>/";
                 };
-
                 options = {
                   ignore_blank_line = false;
                   pad_comment_parts = true;
                   start_of_line = false;
                 };
               };
-
               icons = { };
-
-              files = {
-                mappings = {
-                  close = "<Esc>";
-                  go_in = "l";
-                  go_in_plus = "L";
-                  go_out = "h";
-                  go_out_plus = "H";
-                  mark_goto = "'";
-                  mark_set = "m";
-                  reset = "<BS>";
-                  reveal_cwd = "@";
-                  show_help = "g?";
-                  synchronize = "=";
-                  trim_left = "<";
-                  trim_right = ">";
-                };
-
-                options = {
-                  permanent_delete = true;
-                  use_as_default_explorer = true;
-                  lsp_timeout = 1000;
-                };
-
-                windows = {
-                  max_number = 3;
-                  preview = true;
-                  width_focus = 42;
-                  width_nofocus = 22;
-                  width_preview = 55;
-                };
-              };
             };
           };
 
           alpha = {
             enable = true;
             autoLoad = true;
-
-            # Use our own layout instead of Alpha's built-in dashboard theme.
             theme = null;
-
             settings = {
               layout = [
                 {
@@ -325,9 +272,42 @@
             };
           };
 
+          image = {
+            enable = true;
+            settings = {
+              backend = "ueberzug";
+              processor = "magick_cli";
+              integrations.markdown = {
+                enabled = true;
+                clear_in_insert_mode = false;
+                download_remote_images = true;
+                only_render_image_at_cursor = false;
+                only_render_image_at_cursor_mode = "inline";
+                floating_windows = false;
+                filetypes = [
+                  "markdown"
+                  "vimwiki"
+                ];
+              };
+            };
+          };
+
+          render-markdown = {
+            enable = true;
+            settings = {
+              enabled = true;
+              render_modes = [
+                "n"
+                "c"
+                "t"
+              ];
+              debounce = 100;
+              signs.enabled = false;
+            };
+          };
+
           nvim-autopairs = {
             enable = true;
-
             settings = {
               checkTs = true;
             };
@@ -370,10 +350,8 @@
 
           gitsigns = {
             enable = true;
-
             settings = {
               current_line_blame = false;
-
               signs = {
                 add = {
                   text = "▎";
@@ -396,7 +374,6 @@
 
           which-key = {
             enable = true;
-
             settings = {
               preset = "modern";
               delay = 300;
@@ -409,7 +386,6 @@
           harpoon = {
             enable = true;
             enableTelescope = true;
-
             settings = {
               settings = {
                 save_on_toggle = true;
@@ -420,13 +396,65 @@
 
           noice = {
             enable = true;
-
             settings = {
-              presets = {
-                bottom_search = true;
-                command_palette = true;
-                long_message_to_split = true;
-                lsp_doc_border = false;
+              cmdline = {
+                enabled = true;
+                view = "cmdline";
+                format = {
+                  cmdline = {
+                    pattern = "^:";
+                    icon = ">";
+                    lang = "vim";
+                  };
+                  search_down = {
+                    kind = "search";
+                    pattern = "^/";
+                    icon = "/";
+                    lang = "regex";
+                  };
+                  search_up = {
+                    kind = "search";
+                    pattern = "^%?";
+                    icon = "?";
+                    lang = "regex";
+                  };
+                  filter = {
+                    pattern = "^:%s*!";
+                    icon = "$";
+                    lang = "bash";
+                  };
+                  lua = {
+                    pattern = [
+                      "^:%s*lua%s+"
+                      "^:%s*lua%s*=%s*"
+                      "^:%s*=%s*"
+                    ];
+                    icon = ">";
+                    lang = "lua";
+                  };
+                  help = {
+                    pattern = "^:%s*he?l?p?%s+";
+                    icon = "?";
+                  };
+                  input = {
+                    view = "cmdline";
+                    icon = ">";
+                  };
+                };
+              };
+
+              messages = {
+                enabled = false;
+                view = "notify";
+                view_error = "notify";
+                view_warn = "notify";
+                view_history = "messages";
+                view_search = "virtualtext";
+              };
+
+              popupmenu = {
+                enabled = true;
+                backend = "nui";
               };
 
               lsp = {
@@ -435,34 +463,52 @@
                 signature.enabled = true;
               };
 
-              messages.enabled = false;
-              notify.enabled = false;
+              notify = {
+                enabled = false;
+              };
+
+              documentation = {
+                view = "hover";
+                opts = {
+                  lang = "markdown";
+                  replace = true;
+                  render = "plain";
+                  format = [
+                    "{message}"
+                  ];
+                  win_options = {
+                    concealcursor = "n";
+                    conceallevel = 3;
+                  };
+                };
+              };
+
+              presets = {
+                bottom_search = true;
+                command_palette = false;
+                long_message_to_split = true;
+                lsp_doc_border = false;
+              };
             };
           };
 
-          todo-comments = {
-            enable = true;
-          };
+          todo-comments.enable = true;
 
           illuminate = {
             enable = true;
-
             settings = {
               delay = 200;
               min_count_to_highlight = 2;
-
               providers = [
                 "lsp"
                 "treesitter"
               ];
-
               under_cursor = true;
             };
           };
 
           colorizer = {
             enable = true;
-
             settings = {
               filetypes = [
                 "css"
@@ -475,7 +521,6 @@
                 "typescript"
                 "typescriptreact"
               ];
-
               user_default_options = {
                 mode = "virtualtext";
                 names = false;
@@ -486,16 +531,13 @@
 
           lsp = {
             enable = true;
-
             servers = {
               nil_ls = {
                 enable = true;
-
                 settings = {
-                  formatting = {
-                    command = [ "nixfmt" ];
-                  };
-
+                  formatting.command = [
+                    "nixfmt"
+                  ];
                   nix.flake.autoArchive = true;
                 };
               };
@@ -504,25 +546,21 @@
 
               vtsls = {
                 enable = true;
-
                 rootMarkers = [
                   "tsconfig.json"
                   "jsconfig.json"
                   "package.json"
                   ".git"
                 ];
-
                 settings = {
                   "typescript.suggest.autoImports" = true;
                   "typescript.suggest.paths" = true;
                   "typescript.preferences.importModuleSpecifier" = "shortest";
                   "typescript.preferences.includePackageJsonAutoImports" = "on";
-
                   "javascript.suggest.autoImports" = true;
                   "javascript.suggest.paths" = true;
                   "javascript.preferences.importModuleSpecifier" = "shortest";
                   "javascript.preferences.includePackageJsonAutoImports" = "on";
-
                   "typescript.updateImportsOnFileMove.enabled" = "always";
                   "javascript.updateImportsOnFileMove.enabled" = "always";
                 };
@@ -535,7 +573,6 @@
 
               clangd = {
                 enable = true;
-
                 settings.clangd.fallbackFlags = [
                   "-std=c++20"
                 ];
@@ -545,20 +582,15 @@
 
               rust_analyzer = {
                 enable = true;
-
                 installRustc = false;
                 installCargo = false;
-
                 settings = {
                   cargo = {
                     allFeatures = true;
                     buildScripts.enable = true;
                   };
-
                   procMacro.enable = true;
-
                   checkOnSave.command = "clippy";
-
                   inlayHints = {
                     bindingModeHints.enable = true;
                     closureCaptureHints.enable = true;
@@ -571,7 +603,6 @@
 
               emmet_ls = {
                 enable = true;
-
                 filetypes = [
                   "html"
                   "css"
@@ -584,47 +615,35 @@
 
           blink-cmp = {
             enable = true;
-
             settings = {
               completion = {
                 documentation.auto_show = true;
-
-                accept = {
-                  auto_brackets.enabled = true;
-                };
-
+                accept.auto_brackets.enabled = true;
                 menu = {
                   border = "rounded";
-
-                  draw = {
-                    treesitter = [
-                      "lsp"
-                      "path"
-                      "snippets"
-                      "buffer"
-                    ];
-                  };
+                  draw.treesitter = [
+                    "lsp"
+                    "path"
+                    "snippets"
+                    "buffer"
+                  ];
                 };
               };
 
               keymap = {
                 preset = "default";
-
                 "<CR>" = [
                   "accept"
                   "fallback"
                 ];
-
                 "<C-m>" = [
                   "accept"
                   "fallback"
                 ];
-
                 "<Tab>" = [
                   "select_next"
                   "fallback"
                 ];
-
                 "<S-Tab>" = [
                   "select_prev"
                   "fallback"
@@ -643,116 +662,98 @@
           cord = {
             enable = true;
             autoLoad = true;
-
             settings = {
               editor = {
-
                 tooltip = "??? why hover chrono??";
-
                 icon = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2lkc3VmZTducW5kaDk1dmk5eGI3NHRnbzByaTZ0YzN2MnI1YzBieCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iExhaYid5FfeyK0XuI/giphy.gif";
               };
 
               display = {
                 theme = "atom";
                 flavor = "accent";
-
                 view = "editor";
-
                 swap_icons = true;
               };
 
               text = {
-                workspace = {
-                  __raw = ''
-                    function(opts)
-                      if opts.workspace and opts.workspace ~= "" then
-                        return "In " .. opts.workspace
-                      end
-
-                      return "In Neovim"
+                workspace.__raw = ''
+                  function(opts)
+                    if opts.workspace and opts.workspace ~= "" then
+                      return "In " .. opts.workspace
                     end
-                  '';
-                };
+                    return "In Neovim"
+                  end
+                '';
 
-                editing = {
-                  __raw = ''
-                    function(opts)
-                      local names = {
-                        javascript = "JavaScript",
-                        javascriptreact = "JavaScript React",
-                        typescript = "TypeScript",
-                        typescriptreact = "TypeScript React",
-                        nix = "Nix",
-                        lua = "Lua",
-                        rust = "Rust",
-                        c = "C",
-                        cpp = "C++",
-                        python = "Python",
-                        html = "HTML",
-                        css = "CSS",
-                        scss = "SCSS",
-                        sass = "Sass",
-                        less = "Less",
-                        json = "JSON",
-                        jsonc = "JSONC",
-                        yaml = "YAML",
-                        toml = "TOML",
-                        markdown = "Markdown",
-                        bash = "Bash",
-                        sh = "Shell",
-                        zsh = "Shell",
-                        vim = "Vim Script",
-                        cmake = "CMake",
-                        sql = "SQL",
-                        java = "Java",
-                        go = "Go",
-                        php = "PHP",
-                      }
-
-                      local filetype = names[opts.filetype] or opts.filetype
-
-                      if not filetype or filetype == "" then
-                        return "Editing"
-                      end
-
-                      return "Editing " .. filetype
+                editing.__raw = ''
+                  function(opts)
+                    local names = {
+                      javascript = "JavaScript",
+                      javascriptreact = "JavaScript React",
+                      typescript = "TypeScript",
+                      typescriptreact = "TypeScript React",
+                      nix = "Nix",
+                      lua = "Lua",
+                      rust = "Rust",
+                      c = "C",
+                      cpp = "C++",
+                      python = "Python",
+                      html = "HTML",
+                      css = "CSS",
+                      scss = "SCSS",
+                      sass = "Sass",
+                      less = "Less",
+                      json = "JSON",
+                      jsonc = "JSONC",
+                      yaml = "YAML",
+                      toml = "TOML",
+                      markdown = "Markdown",
+                      bash = "Bash",
+                      sh = "Shell",
+                      zsh = "Shell",
+                      vim = "Vim Script",
+                      cmake = "CMake",
+                      sql = "SQL",
+                      java = "Java",
+                      go = "Go",
+                      php = "PHP",
+                    }
+                    local filetype = names[opts.filetype] or opts.filetype
+                    if not filetype or filetype == "" then
+                      return "Editing"
                     end
-                  '';
-                };
+                    return "Editing " .. filetype
+                  end
+                '';
 
-                viewing = {
-                  __raw = ''
-                    function(opts)
-                      local names = {
-                        javascript = "JavaScript",
-                        javascriptreact = "JavaScript React",
-                        typescript = "TypeScript",
-                        typescriptreact = "TypeScript React",
-                        nix = "Nix",
-                        lua = "Lua",
-                        rust = "Rust",
-                        c = "C",
-                        cpp = "C++",
-                        python = "Python",
-                        html = "HTML",
-                        css = "CSS",
-                        json = "JSON",
-                        jsonc = "JSONC",
-                        yaml = "YAML",
-                        toml = "TOML",
-                        markdown = "Markdown",
-                      }
-
-                      local filetype = names[opts.filetype] or opts.filetype
-
-                      if not filetype or filetype == "" then
-                        return "Viewing"
-                      end
-
-                      return "Viewing " .. filetype
+                viewing.__raw = ''
+                  function(opts)
+                    local names = {
+                      javascript = "JavaScript",
+                      javascriptreact = "JavaScript React",
+                      typescript = "TypeScript",
+                      typescriptreact = "TypeScript React",
+                      nix = "Nix",
+                      lua = "Lua",
+                      rust = "Rust",
+                      c = "C",
+                      cpp = "C++",
+                      python = "Python",
+                      html = "HTML",
+                      css = "CSS",
+                      json = "JSON",
+                      jsonc = "JSONC",
+                      yaml = "YAML",
+                      toml = "TOML",
+                      markdown = "Markdown",
+                    }
+                    local filetype = names[opts.filetype] or opts.filetype
+                    if not filetype or filetype == "" then
+                      return "Viewing"
                     end
-                  '';
-                };
+                    return "Viewing " .. filetype
+                  end
+                '';
 
                 file_browser = "Browsing files";
                 plugin_manager = "Managing plugins";
@@ -767,9 +768,7 @@
                 dashboard = "Home";
               };
 
-              timestamp = {
-                enabled = true;
-              };
+              timestamp.enabled = true;
 
               idle = {
                 enabled = true;
@@ -781,14 +780,10 @@
                 details = "Idling";
               };
 
-              advanced = {
-                discord = {
-                  reconnect = {
-                    enabled = true;
-                    interval = 5000;
-                    initial = true;
-                  };
-                };
+              advanced.discord.reconnect = {
+                enabled = true;
+                interval = 5000;
+                initial = true;
               };
             };
           };
@@ -813,6 +808,7 @@
                       bg = "#111111";
                     };
                   };
+
                   insert = {
                     a = {
                       fg = "#111111";
@@ -828,6 +824,7 @@
                       bg = "#111111";
                     };
                   };
+
                   visual = {
                     a = {
                       fg = "#111111";
@@ -843,6 +840,7 @@
                       bg = "#111111";
                     };
                   };
+
                   replace = {
                     a = {
                       fg = "#111111";
@@ -858,6 +856,7 @@
                       bg = "#111111";
                     };
                   };
+
                   command = {
                     a = {
                       fg = "#111111";
@@ -873,6 +872,7 @@
                       bg = "#111111";
                     };
                   };
+
                   inactive = {
                     a = {
                       fg = "#666666";
@@ -888,6 +888,7 @@
                     };
                   };
                 };
+
                 globalstatus = true;
                 icons_enabled = true;
                 component_separators = {
@@ -899,7 +900,6 @@
                   right = "";
                 };
                 disabled_filetypes.statusline = [
-                  "minifiles"
                   "dashboard"
                   "alpha"
                 ];
@@ -912,12 +912,14 @@
                     fmt = "function(str) return str:sub(1, 1) end";
                   }
                 ];
+
                 lualine_b = [
                   {
                     __unkeyed = "branch";
                     icon = "󰘬";
                   }
                 ];
+
                 lualine_c = [
                   {
                     __unkeyed = "filename";
@@ -929,6 +931,7 @@
                     };
                   }
                 ];
+
                 lualine_x = [
                   {
                     __unkeyed = "diagnostics";
@@ -940,12 +943,14 @@
                     };
                   }
                 ];
+
                 lualine_y = [
                   {
                     __unkeyed = "filetype";
                     icon_only = true;
                   }
                 ];
+
                 lualine_z = [
                   {
                     __unkeyed = "location";
@@ -957,13 +962,18 @@
               inactive_sections = {
                 lualine_a = [ ];
                 lualine_b = [ ];
+
                 lualine_c = [
                   {
                     __unkeyed = "filename";
                     path = 1;
                   }
                 ];
-                lualine_x = [ "location" ];
+
+                lualine_x = [
+                  "location"
+                ];
+
                 lualine_y = [ ];
                 lualine_z = [ ];
               };
@@ -975,11 +985,6 @@
 
             keymaps = {
               "<leader>ff" = {
-                action = "find_files";
-                options.desc = "Find files";
-              };
-
-              "<leader>fg" = {
                 action = "live_grep";
                 options.desc = "Live grep";
               };
@@ -1001,23 +1006,18 @@
             };
 
             extensions = {
-              fzf-native = {
-                enable = true;
-              };
+              fzf-native.enable = true;
             };
 
             settings = {
               defaults = {
                 prompt_prefix = "   ";
-                selection_caret = " 󰁔 ";
-
+                selection_caret = " > ";
                 path_display = [
                   "truncate"
                 ];
-
                 sorting_strategy = "ascending";
-
-                border = true;
+                border = false;
                 borderchars = [
                   "─"
                   "│"
@@ -1029,18 +1029,12 @@
                   "╰"
                 ];
 
+                layout_strategy = "bottom_pane";
+
                 layout_config = {
-                  horizontal = {
-                    prompt_position = "top";
-                    preview_width = 0.55;
-                  };
-
-                  vertical = {
-                    mirror = true;
-                  };
-
-                  width = 0.9;
-                  height = 0.8;
+                  height = 0.35;
+                  width = 1.0;
+                  prompt_position = "top";
                 };
 
                 file_ignore_patterns = [
@@ -1057,37 +1051,28 @@
 
           indent-blankline = {
             enable = true;
-
             settings = {
-              indent = {
-                char = "┊";
-              };
-
+              indent.char = "┊";
               scope = {
                 enabled = true;
                 char = "┃";
               };
-
-              exclude = {
-                filetypes = [
-                  "help"
-                  "dashboard"
-                  "NvimTree"
-                  "minifiles"
-                  "TelescopePrompt"
-                  "TelescopeResults"
-                ];
-              };
+              exclude.filetypes = [
+                "help"
+                "dashboard"
+                "NvimTree"
+                "TelescopePrompt"
+                "TelescopeResults"
+                "netrw"
+              ];
             };
           };
 
           treesitter = {
             enable = true;
-
             settings = {
               highlight.enable = true;
               indent.enable = true;
-
               ensure_installed = [
                 "nix"
                 "lua"
@@ -1095,7 +1080,6 @@
                 "vimdoc"
                 "regex"
                 "bash"
-
                 "json"
                 "jsonc"
                 "javascript"
@@ -1104,14 +1088,11 @@
                 "html"
                 "css"
                 "yaml"
-
                 "markdown"
                 "markdown_inline"
-
                 "rust"
                 "toml"
                 "ron"
-
                 "c"
                 "cpp"
                 "cmake"
@@ -1121,81 +1102,62 @@
 
           conform-nvim = {
             enable = true;
-
             settings = {
               formatters_by_ft = {
                 nix = [
                   "nixfmt"
                 ];
-
                 lua = [
                   "stylua"
                 ];
-
                 javascript = [
                   "prettier"
                 ];
-
                 javascriptreact = [
                   "prettier"
                 ];
-
                 typescript = [
                   "prettier"
                 ];
-
                 typescriptreact = [
                   "prettier"
                 ];
-
                 json = [
                   "prettier"
                 ];
-
                 jsonc = [
                   "prettier"
                 ];
-
                 yaml = [
                   "prettier"
                 ];
-
                 markdown = [
                   "prettier"
                 ];
-
                 markdown_inline = [
                   "prettier"
                 ];
-
                 html = [
                   "prettier"
                 ];
-
                 css = [
                   "prettier"
                 ];
-
                 rust = [
                   "rustfmt"
                 ];
-
                 toml = [
                   "taplo"
                 ];
-
                 c = [
                   "clang-format"
                 ];
-
                 cpp = [
                   "clang-format"
                 ];
-
                 objc = [
                   "clang-format"
                 ];
-
                 objcpp = [
                   "clang-format"
                 ];
@@ -1210,7 +1172,6 @@
         };
 
         keymaps = [
-
           {
             key = "gd";
             mode = "n";
@@ -1299,30 +1260,17 @@
           }
 
           {
-            key = "<leader>o";
+            key = "<leader>e";
             mode = "n";
-            action.__raw = ''
-              function()
-                if not MiniFiles.close() then
-                  MiniFiles.open()
-                end
-              end
-            '';
-            options.desc = "Toggle mini.files";
+            action = "<cmd>Explore<CR>";
+            options.desc = "Open file explorer";
           }
 
           {
-            key = "<leader>e";
+            key = "<leader>E";
             mode = "n";
-            action.__raw = ''
-              function()
-                if not MiniFiles.close() then
-                  MiniFiles.open(vim.api.nvim_buf_get_name(0))
-                  MiniFiles.reveal_cwd()
-                end
-              end
-            '';
-            options.desc = "Toggle reveal current file";
+            action = "<cmd>Lexplore<CR>";
+            options.desc = "Open file explorer sidebar";
           }
 
           {
@@ -1400,6 +1348,13 @@
             mode = "n";
             action = "<cmd>TodoTelescope<CR>";
             options.desc = "Search TODOs";
+          }
+
+          {
+            key = "<leader>m";
+            mode = "n";
+            action = "<cmd>RenderMarkdown toggle<CR>";
+            options.desc = "Toggle Markdown rendering";
           }
 
           {
