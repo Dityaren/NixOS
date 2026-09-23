@@ -34,6 +34,12 @@
           enable = true;
 
           extraConfig = ''
+
+            output "eDP-1" {
+              mode "1920x1080@165.010"
+              scale 1.2
+            }
+
             window-rule {
                 geometry-corner-radius 0
                 clip-to-geometry false
@@ -105,10 +111,10 @@
 
             layout = {
               background-color = "transparent";
-              gaps = 15;
+              gaps = 5;
 
-              focus-ring.off = { };
-              # shadow.off = { };
+              focus-ring.on = { };
+              shadow.on = { };
 
               border = {
                 width = 0;
