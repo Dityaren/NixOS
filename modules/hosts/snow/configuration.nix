@@ -109,13 +109,13 @@
 
       programs.fish.enable = true;
 
-      security.polkit.enable = true;
-
       environment = {
         systemPackages = with pkgs; [
           nodejs_24
           corepack_24
 
+          sqlit-tui
+          vesktop
           dnsmasq
           vm-curator
           qemu
@@ -135,7 +135,6 @@
           alacritty
           tmux
           docker-compose
-          dbeaver-bin
         ];
 
         variables = {
@@ -169,10 +168,11 @@
       swapDevices = [
         {
           device = "/swapfile";
-          size = 8 * 1024;
+          size = 4 * 1024;
         }
       ];
       zramSwap.enable = true;
+
       system.stateVersion = vars.stateVersion;
     };
 }
