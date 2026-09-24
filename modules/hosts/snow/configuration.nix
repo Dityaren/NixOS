@@ -34,8 +34,8 @@
 
       programs.nix-ld.enable = true;
       programs.nix-ld.libraries = with pkgs; [
-        nodejs
-        pnpm
+        nodejs_24
+        corepack_24
       ];
 
       programs.direnv = {
@@ -109,8 +109,17 @@
 
       programs.fish.enable = true;
 
+      security.polkit.enable = true;
+
       environment = {
         systemPackages = with pkgs; [
+          nodejs_24
+          corepack_24
+
+          dnsmasq
+          vm-curator
+          qemu
+          qemu-utils
           devenv
           kitty
           obsidian
