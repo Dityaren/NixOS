@@ -81,7 +81,7 @@
           statix
           lua-language-server
           stylua
-          nodejs
+          nodejs_24
           typescript
           vtsls
           tailwindcss-language-server
