@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   flake.nixosModules.fish =
@@ -19,11 +19,10 @@
       ];
 
       home-manager.users.${vars.username} = {
-
         programs.fish = {
           enable = true;
 
-          shellAliases = {
+          functions = {
             initdirenv = ''
               if test -e .envrc
                 echo ".envrc already exists"
@@ -40,15 +39,60 @@
               echo "Created and allowed .envrc"
             '';
 
-            ls = "eza --icons";
-            ll = "eza -lah --icons";
-            la = "eza -a --icons";
-            lt = "eza --tree --icons";
+            fzf_file_widget = ''
+              set -l selected (
+                fd \
+                  --type f \
+                  --hidden \
+                  --follow \
+                  --exclude .git |
+                fzf \
+                  --preview 'bat --color=always --style=numbers --line-range=:300 {}'
+              )
 
+              if test -n "$selected"
+                commandline -it -- "$selected"
+              end
+
+              commandline -f repaint
+            '';
+
+            fzf_directory_widget = ''
+              set -l selected (
+                fd \
+                  --type d \
+                  --hidden \
+                  --follow \
+                  --exclude .git |
+                fzf \
+                  --preview 'eza --tree --icons --level=2 {}'
+              )
+
+              if test -n "$selected"
+                cd -- "$selected"
+              end
+
+              commandline -f repaint
+            '';
+
+            fzf_history_widget = ''
+              set -l selected (
+                history |
+                fzf --tac
+              )
+
+              if test -n "$selected"
+                commandline -- "$selected"
+              end
+
+              commandline -f repaint
+            '';
+          };
+
+          shellAliases = {
             cat = "bat";
             grep = "rg";
             find = "fd";
-
             f = "fzf";
 
             vi = "nvim";
@@ -67,7 +111,6 @@
 
           shellAbbrs = {
             rebuild = "sudo nixos-rebuild switch --flake ${vars.flakeRoot}#${vars.hostname}";
-
             update = "nix flake update --flake ${vars.flakeRoot}";
           };
 
@@ -84,81 +127,44 @@
 
             set -gx DEVENV_TUI false
 
+            set -gx eza_params "--group-directories-first --icons --color=always"
+
             starship init fish | source
-
-            function fzf_file_widget
-              set -l selected (
-                fd \
-                  --type f \
-                  --hidden \
-                  --follow \
-                  --exclude .git |
-                fzf \
-                  --preview 'bat --color=always --style=numbers --line-range=:300 {}'
-              )
-
-              if test -n "$selected"
-                commandline -it -- "$selected"
-              end
-
-              commandline -f repaint
-            end
-
-            function fzf_directory_widget
-              set -l selected (
-                fd \
-                  --type d \
-                  --hidden \
-                  --follow \
-                  --exclude .git |
-                fzf \
-                  --preview 'eza --tree --icons --level=2 {}'
-              )
-
-              if test -n "$selected"
-                cd -- "$selected"
-              end
-
-              commandline -f repaint
-            end
-
-            function fzf_history_widget
-              set -l selected (
-                history |
-                fzf --tac
-              )
-
-              if test -n "$selected"
-                commandline -- "$selected"
-              end
-
-              commandline -f repaint
-            end
 
             bind -M insert \ct fzf_file_widget
             bind -M insert \ec fzf_directory_widget
             bind -M insert \cr fzf_history_widget
           '';
 
-          plugins = with pkgs.fishPlugins; [
+          plugins = [
             {
               name = "autopair";
-              src = autopair.src;
+              src = pkgs.fishPlugins.autopair.src;
             }
 
             {
               name = "colored-man-pages";
-              src = colored-man-pages.src;
+              src = pkgs.fishPlugins.colored-man-pages.src;
             }
 
             {
               name = "done";
-              src = done.src;
+              src = pkgs.fishPlugins.done.src;
             }
 
             {
               name = "sponge";
-              src = sponge.src;
+              src = pkgs.fishPlugins.sponge.src;
+            }
+
+            {
+              name = "fish-eza";
+              src = pkgs.fetchFromGitHub {
+                owner = "givensuman";
+                repo = "fish-eza";
+                rev = "main";
+                hash = "sha256-cFUHMSEMxq/XSeKOLCUArgM9ogY6NqrPmhxaHn5bbQs=";
+              };
             }
           ];
         };
@@ -176,11 +182,9 @@
             "--border=rounded"
             "--info=inline"
             "--padding=1"
-
             "--prompt=❯ "
             "--pointer=▶"
             "--marker=✓"
-
             "--color=bg:#16161D,bg+:#1F1F28"
             "--color=fg:#DCD7BA,fg+:#DCD7BA"
             "--color=hl:#7E9CD8,hl+:#7E9CD8"
@@ -199,7 +203,6 @@
           enable = true;
 
           settings = {
-
             add_newline = true;
 
             format = builtins.concatStringsSep "" [
@@ -316,7 +319,6 @@
             character = {
               success_symbol = "[❯](bold green)";
               error_symbol = "[❯](bold red)";
-
               vimcmd_symbol = "[❮](bold mauve)";
               vimcmd_replace_one_symbol = "[❮](bold red)";
               vimcmd_replace_symbol = "[❮](bold red)";
