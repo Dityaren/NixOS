@@ -114,6 +114,7 @@
           nodejs_24
           corepack_24
 
+          qbittorrent-enhanced
           sqlit-tui
           vesktop
           dnsmasq
