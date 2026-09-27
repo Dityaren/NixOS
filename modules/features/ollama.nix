@@ -13,6 +13,8 @@
         package = pkgs.ollama-cuda;
         loadModels = [
           "qwen2.5-coder:1.5b-base-q4_K_M"
+          "qwen2.5-coder:1.5b"
+          "qwen3:4b"
         ];
       };
 
