@@ -30,6 +30,7 @@
         self.nixosModules.power-management
         self.nixosModules.tmux
         self.nixosModules.ollama
+        self.nixosModules.anime-game-launcher
 
       ];
 
