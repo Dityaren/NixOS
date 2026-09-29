@@ -17,8 +17,8 @@
         colorschemes.kanagawa = {
           enable = true;
           settings = {
-            theme = "dragon";
-            transparent = true;
+            theme = "lotus";
+            transparent = false;
             terminalColors = true;
             dimInactive = false;
             commentStyle.italic = true;
@@ -37,7 +37,7 @@
           scrolloff = 8;
           sidescrolloff = 8;
           smoothscroll = true;
-          wrap = false;
+          wrap = true;
           expandtab = true;
           shiftwidth = 2;
           tabstop = 2;
@@ -48,7 +48,7 @@
           showmode = false;
           showcmd = false;
           pumheight = 10;
-          ruler = false;
+          ruler = true;
           splitbelow = true;
           splitright = true;
           splitkeep = "screen";
@@ -664,8 +664,8 @@
             autoLoad = true;
             settings = {
               editor = {
-                tooltip = "??? why hover chrono??";
-                icon = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2lkc3VmZTducW5kaDk1dmk5eGI3NHRnbzByaTZ0YzN2MnI1YzBieCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iExhaYid5FfeyK0XuI/giphy.gif";
+                tooltip = "HOVER CURREN CHAN == DEATH!!!";
+                icon = "https://c.tenor.com/Ag1mcxevv8UAAAAd/tenor.gif";
               };
 
               display = {
