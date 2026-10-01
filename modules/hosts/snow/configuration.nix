@@ -15,22 +15,22 @@
         self.nixosModules.snowHardware
         self.nixosModules.home-manager
         self.nixosModules.niri
-        self.nixosModules.nvidia
+        # self.nixosModules.nvidia
         self.nixosModules.ly
         self.nixosModules.xdg
         self.nixosModules.nixvim
         self.nixosModules.spicetify
         self.nixosModules.onlyoffice
-        self.nixosModules.steam
+        # self.nixosModules.steam
         self.nixosModules.screenshot
         self.nixosModules.fish
         self.nixosModules.alacritty
-        self.nixosModules.zen-browser
+        # self.nixosModules.zen-browser
         self.nixosModules.noctalia
         self.nixosModules.power-management
         self.nixosModules.tmux
         # self.nixosModules.ollama
-        self.nixosModules.anime-game-launcher
+        # self.nixosModules.anime-game-launcher
 
       ];
 
@@ -119,20 +119,10 @@
           qbittorrent-enhanced
           sqlit-tui
           vesktop
-          dnsmasq
-          vm-curator
-          qemu
-          qemu-utils
           devenv
           kitty
-          obsidian
           jq
-          temurin-bin
-          alsa-lib
-          easyeffects
           sioyek
-          obs-studio
-          vim
           wget
           git
           alacritty
@@ -171,7 +161,7 @@
       swapDevices = [
         {
           device = "/swapfile";
-          size = 4 * 1024;
+          size = 2 * 1024;
         }
       ];
       zramSwap.enable = true;
