@@ -18,7 +18,6 @@
         self.nixosModules.nvidia
         self.nixosModules.ly
         self.nixosModules.xdg
-        # self.nixosModules.nixvim
         self.nixosModules.nixcats
         self.nixosModules.spicetify
         self.nixosModules.onlyoffice
