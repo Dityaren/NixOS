@@ -4,7 +4,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
-    nixvim.url = "github:nix-community/nixvim";
+    nixCats.url = "github:BirdeeHub/nixCats-nvim";
 
     aagl = {
       url = "github:ezKEa/aagl-gtk-on-nix";
