@@ -22,7 +22,7 @@
         self.nixosModules.nixcats
         self.nixosModules.spicetify
         self.nixosModules.onlyoffice
-        self.nixosModules.steam
+        self.nixosModules.gaming
         self.nixosModules.screenshot
         self.nixosModules.fish
         self.nixosModules.alacritty
@@ -36,9 +36,9 @@
       ];
 
       nvim = {
-  enable = true;
-  packageNames = [ "nvim" ];
-};
+        enable = true;
+        packageNames = [ "nvim" ];
+      };
 
       programs.nix-ld.enable = true;
       programs.nix-ld.libraries = with pkgs; [
