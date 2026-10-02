@@ -15,24 +15,30 @@
         self.nixosModules.snowHardware
         self.nixosModules.home-manager
         self.nixosModules.niri
-        # self.nixosModules.nvidia
+        self.nixosModules.nvidia
         self.nixosModules.ly
         self.nixosModules.xdg
-        self.nixosModules.nixvim
+        # self.nixosModules.nixvim
+        self.nixosModules.nixcats
         self.nixosModules.spicetify
         self.nixosModules.onlyoffice
-        # self.nixosModules.steam
+        self.nixosModules.steam
         self.nixosModules.screenshot
         self.nixosModules.fish
         self.nixosModules.alacritty
-        # self.nixosModules.zen-browser
+        self.nixosModules.zen-browser
         self.nixosModules.noctalia
         self.nixosModules.power-management
         self.nixosModules.tmux
         # self.nixosModules.ollama
-        # self.nixosModules.anime-game-launcher
+        self.nixosModules.anime-game-launcher
 
       ];
+
+      nvim = {
+  enable = true;
+  packageNames = [ "nvim" ];
+};
 
       programs.nix-ld.enable = true;
       programs.nix-ld.libraries = with pkgs; [
