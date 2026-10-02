@@ -121,6 +121,7 @@
           nodejs_24
           corepack_24
 
+          gh
           qbittorrent-enhanced
           sqlit-tui
           vesktop
