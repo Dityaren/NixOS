@@ -121,6 +121,7 @@
           nodejs_24
           corepack_24
 
+          lmstudio
           gh
           qbittorrent-enhanced
           sqlit-tui
