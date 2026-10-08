@@ -97,11 +97,13 @@
             "networkmanager"
             "wheel"
             "docker"
+            "libvirtd"
           ];
         };
       };
 
       virtualisation = {
+        libvirtd.enable = true;
         docker = {
           enable = true;
 
@@ -121,6 +123,8 @@
           nodejs_24
           corepack_24
 
+          qemu
+          virt-manager
           lmstudio
           gh
           qbittorrent-enhanced
