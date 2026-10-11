@@ -239,10 +239,10 @@ end
 
 require("cord").setup({
 	editor = {
-		tooltip = "HOVER CURREN CHAN == DEATH!!!",
-		icon = "https://c.tenor.com/Ag1mcxevv8UAAAAd/tenor.gif",
+		tooltip = "Curren chan Yawn~",
+		icon = "https://c.tenor.com/-IuQXM-GuO4AAAAC/tenor.gif",
 	},
-	display = { theme = "atom", flavor = "accent", view = "editor", swap_icons = true },
+	display = { theme = "minecraft", flavor = "light", view = "editor", swap_icons = true },
 	buttons = nil,
 	text = {
 		workspace = function(opts)
