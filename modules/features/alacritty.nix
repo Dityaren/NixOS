@@ -14,12 +14,28 @@
 
           settings = {
             window = {
-              opacity = 0.8;
+              opacity = 0.9;
               blur = true;
             };
 
             font = {
-              size = 18;
+              normal = {
+                family = "JetBrainsMono Nerd Font";
+                style = "Regular";
+              };
+              bold = {
+                family = "JetBrainsMono Nerd Font";
+                style = "Bold";
+              };
+              italic = {
+                family = "JetBrainsMono Nerd Font";
+                style = "Italic";
+              };
+              bold_italic = {
+                family = "JetBrainsMono Nerd Font";
+                style = "Bold Italic";
+              };
+              size = 16;
             };
           };
         };
