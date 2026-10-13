@@ -15,7 +15,6 @@
         self.nixosModules.snowHardware
         self.nixosModules.home-manager
         self.nixosModules.audio
-        # self.nixosModules.niri
         self.nixosModules.nvidia
         self.nixosModules.ly
         self.nixosModules.xdg
@@ -27,7 +26,6 @@
         self.nixosModules.fish
         self.nixosModules.alacritty
         self.nixosModules.zen-browser
-        # self.nixosModules.noctalia
         self.nixosModules.power-management
         self.nixosModules.tmux
         # self.nixosModules.ollama
