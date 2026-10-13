@@ -14,7 +14,8 @@
       imports = [
         self.nixosModules.snowHardware
         self.nixosModules.home-manager
-        self.nixosModules.niri
+        self.nixosModules.audio
+        # self.nixosModules.niri
         self.nixosModules.nvidia
         self.nixosModules.ly
         self.nixosModules.xdg
@@ -26,11 +27,13 @@
         self.nixosModules.fish
         self.nixosModules.alacritty
         self.nixosModules.zen-browser
-        self.nixosModules.noctalia
+        # self.nixosModules.noctalia
         self.nixosModules.power-management
         self.nixosModules.tmux
         # self.nixosModules.ollama
         self.nixosModules.anime-game-launcher
+        self.nixosModules.mango-dms
+        self.nixosModules.foot
 
       ];
 
@@ -120,6 +123,9 @@
 
       environment = {
         systemPackages = with pkgs; [
+          alsa-utils
+          brightnessctl
+
           nodejs_24
           corepack_24
 
@@ -129,7 +135,7 @@
           gh
           qbittorrent-enhanced
           sqlit-tui
-          vesktop
+          legcord
           devenv
           kitty
           jq
