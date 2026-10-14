@@ -45,6 +45,9 @@ let
 
       "SUPER,t,spawn,foot"
 
+      "NONE,Print,spawn,screenshot-copy"
+      "SHIFT,Print,spawn,screenshot-area"
+
       "SUPER,1,view,1"
       "SUPER,2,view,2"
       "SUPER,3,view,3"
