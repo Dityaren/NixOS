@@ -78,6 +78,16 @@ let
       "SUPER,Up,focusdir,up"
       "SUPER,Down,focusdir,down"
 
+      "SUPER+SHIFT,h,exchange_client,left"
+      "SUPER+SHIFT,l,exchange_client,right"
+      "SUPER+SHIFT,k,exchange_client,up"
+      "SUPER+SHIFT,j,exchange_client,down"
+
+      "SUPER+SHIFT,Left,exchange_client,left"
+      "SUPER+SHIFT,Right,exchange_client,right"
+      "SUPER+SHIFT,Up,exchange_client,up"
+      "SUPER+SHIFT,Down,exchange_client,down"
+
       "SUPER,bracketleft,view,previous"
       "SUPER,bracketright,view,next"
       "SUPER+CTRL,bracketleft,tag,previous"
