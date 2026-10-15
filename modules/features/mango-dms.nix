@@ -68,6 +68,16 @@ let
       "SUPER+SHIFT,8,tag,8"
       "SUPER+SHIFT,9,tag,9"
 
+      "SUPER,h,focusdir,left"
+      "SUPER,l,focusdir,right"
+      "SUPER,k,focusdir,up"
+      "SUPER,j,focusdir,down"
+
+      "SUPER,Left,focusdir,left"
+      "SUPER,Right,focusdir,right"
+      "SUPER,Up,focusdir,up"
+      "SUPER,Down,focusdir,down"
+
       "SUPER,bracketleft,view,previous"
       "SUPER,bracketright,view,next"
       "SUPER+CTRL,bracketleft,tag,previous"
