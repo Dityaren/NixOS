@@ -1,13 +1,10 @@
--- make lua/ next to this init.lua requirable
 local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
 vim.opt.runtimepath:prepend(config_dir)
 package.path = config_dir .. "/lua/?.lua;" .. config_dir .. "/lua/?/init.lua;" .. package.path
 
--- globals (must be set before plugins / keymaps)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- options
 local o = vim.opt
 o.number = true
 o.relativenumber = true
@@ -38,15 +35,21 @@ o.ignorecase = true
 o.smartcase = true
 o.hlsearch = true
 o.incsearch = true
+o.inccommand = "split"
+o.undofile = true
+o.confirm = true
 o.updatetime = 250
 o.timeoutlen = 300
+o.fillchars = { eob = " " }
+o.sessionoptions = "buffers,curdir,tabpages,winsize,help,globals,skiprtp,folds"
+
+o.foldmethod = "expr"
+o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 o.foldlevel = 99
 o.foldlevelstart = 99
-o.fillchars = { eob = " " }
 
--- colorscheme
 require("kanagawa").setup({
-	theme = "lotus",
+	theme = "dragon",
 	transparent = false,
 	terminalColors = true,
 	dimInactive = false,
@@ -57,7 +60,6 @@ require("kanagawa").setup({
 })
 vim.cmd.colorscheme("kanagawa")
 
--- highlight overrides (applied after colorscheme; re-applied on ColorScheme)
 local function apply_highlights()
 	local hl = {
 		Normal = { bg = "none" },
@@ -82,7 +84,6 @@ end
 apply_highlights()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = apply_highlights })
 
--- diagnostics
 vim.diagnostic.config({
 	virtual_text = false,
 	underline = true,
@@ -92,7 +93,6 @@ vim.diagnostic.config({
 	float = { border = "rounded", source = "if_many" },
 })
 
--- gf: LSP definition for TS/JS (vtsls), builtin gf otherwise
 _G.typescript_goto_file = function()
 	local ts_fts = {
 		javascript = true,
@@ -112,14 +112,6 @@ _G.typescript_goto_file = function()
 end
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "netrw",
-	callback = function()
-		vim.keymap.set("n", "<Esc>", "<cmd>bd<CR>", { buffer = true, silent = true })
-	end,
-})
-
--- treesitter highlight + indent
-vim.api.nvim_create_autocmd("FileType", {
 	callback = function(args)
 		if pcall(vim.treesitter.start, args.buf) then
 			local ok, ts = pcall(require, "nvim-treesitter")
@@ -130,7 +122,22 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- keymaps
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		vim.hl.on_yank({ timeout = 150 })
+	end,
+})
+
+vim.api.nvim_create_autocmd("BufReadPost", {
+	callback = function(args)
+		local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+		local lines = vim.api.nvim_buf_line_count(args.buf)
+		if mark[1] > 0 and mark[1] <= lines then
+			pcall(vim.api.nvim_win_set_cursor, 0, mark)
+		end
+	end,
+})
+
 local function map(mode, lhs, rhs, desc)
 	vim.keymap.set(mode, lhs, rhs, { desc = desc })
 end
@@ -140,11 +147,16 @@ map("n", "gf", _G.typescript_goto_file, "Go to file or import")
 map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
 map("n", "gr", vim.lsp.buf.references, "Find references")
 map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
+map("n", "gy", vim.lsp.buf.type_definition, "Go to type definition")
 map("n", "K", vim.lsp.buf.hover, "Hover documentation")
 map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
 map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code action")
-map("n", "<leader>cf", function()
-	require("conform").format({ async = true, lsp_fallback = true })
+map("n", "<leader>cl", vim.lsp.codelens.run, "Run code lens")
+map("n", "<leader>ci", function()
+	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
+end, "Toggle inlay hints")
+map({ "n", "v" }, "<leader>cf", function()
+	require("conform").format({ async = true, lsp_format = "fallback" })
 end, "Format buffer")
 map("n", "[d", function()
 	vim.diagnostic.jump({ count = -1, float = true })
@@ -153,18 +165,61 @@ map("n", "]d", function()
 	vim.diagnostic.jump({ count = 1, float = true })
 end, "Next diagnostic")
 map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>", "Toggle diagnostics")
-map("n", "<leader>e", "<cmd>Explore<CR>", "Open file explorer")
-map("n", "<leader>E", "<cmd>Lexplore<CR>", "Open file explorer sidebar")
+map("n", "<leader>xb", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", "Buffer diagnostics")
+map("n", "<leader>xq", "<cmd>Trouble qflist toggle<CR>", "Quickfix list")
 
--- telescope
+map("n", "<leader>e", "<cmd>Oil<CR>", "File explorer (current dir)")
+map("n", "<leader>E", "<cmd>Oil --float<CR>", "File explorer (float)")
+map("n", "-", "<cmd>Oil<CR>", "Open parent directory")
+map("n", "<C-h>", "<C-w>h", "Window left")
+map("n", "<C-j>", "<C-w>j", "Window down")
+map("n", "<C-k>", "<C-w>k", "Window up")
+map("n", "<C-l>", "<C-w>l", "Window right")
+map("n", "<S-h>", "<cmd>bprevious<CR>", "Previous buffer")
+map("n", "<S-l>", "<cmd>bnext<CR>", "Next buffer")
+map("n", "[b", "<cmd>bprevious<CR>", "Previous buffer")
+map("n", "]b", "<cmd>bnext<CR>", "Next buffer")
+map("n", "<leader>bd", function()
+	require("mini.bufremove").delete(0, false)
+end, "Delete buffer")
+map("n", "<leader>bo", "<cmd>%bd|e#|bd#<CR>", "Delete other buffers")
+map("v", "<", "<gv", "Indent left (keep selection)")
+map("v", ">", ">gv", "Indent right (keep selection)")
+
+map({ "n", "x", "o" }, "s", function()
+	require("flash").jump()
+end, "Flash jump")
+map({ "n", "x", "o" }, "S", function()
+	require("flash").treesitter()
+end, "Flash treesitter")
+map("o", "r", function()
+	require("flash").remote()
+end, "Flash remote")
+map({ "o", "x" }, "R", function()
+	require("flash").treesitter_search()
+end, "Flash treesitter search")
+map("c", "<C-s>", function()
+	require("flash").toggle()
+end, "Toggle flash search")
+
 map("n", "<leader><space>", "<cmd>Telescope find_files<CR>", "Find files")
+map("n", "<leader>ff", "<cmd>Telescope find_files<CR>", "Find files")
 map("n", "<leader>sg", "<cmd>Telescope live_grep<CR>", "Search project")
-map("n", "<leader>ff", "<cmd>Telescope live_grep<CR>", "Live grep")
+map("n", "<leader>sw", "<cmd>Telescope grep_string<CR>", "Search word under cursor")
 map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", "Find buffers")
 map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", "Help tags")
 map("n", "<leader>fr", "<cmd>Telescope oldfiles<CR>", "Recent files")
+map("n", "<leader>fd", "<cmd>Telescope diagnostics<CR>", "Diagnostics")
+map("n", "<leader>fk", "<cmd>Telescope keymaps<CR>", "Keymaps")
+map("n", "<leader>ss", "<cmd>Telescope lsp_document_symbols<CR>", "Document symbols")
+map("n", "<leader>sS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", "Workspace symbols")
+map("n", "<leader>sr", function()
+	require("grug-far").open()
+end, "Search and replace (project)")
+map({ "n", "v" }, "<leader>sR", function()
+	require("grug-far").open({ prefills = { paths = vim.fn.expand("%") } })
+end, "Search and replace (file)")
 
--- harpoon
 map("n", "<leader>a", function()
 	require("harpoon"):list():add()
 end, "Harpoon add file")
@@ -178,12 +233,43 @@ for i = 1, 4 do
 	end, "Harpoon file " .. i)
 end
 
+map("n", "<leader>gg", "<cmd>Neogit<CR>", "Neogit")
+map("n", "<leader>gd", "<cmd>DiffviewOpen<CR>", "Diff view")
+map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", "File history")
+map("n", "<leader>gH", "<cmd>DiffviewFileHistory<CR>", "Repo history")
+map("n", "<leader>gq", "<cmd>DiffviewClose<CR>", "Close diff view")
+map("n", "<leader>gb", "<cmd>Gitsigns blame_line<CR>", "Blame line")
+map("n", "<leader>gB", "<cmd>Gitsigns toggle_current_line_blame<CR>", "Toggle inline blame")
+map("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>", "Preview hunk")
+map("n", "<leader>gs", "<cmd>Gitsigns stage_hunk<CR>", "Stage hunk")
+map("n", "<leader>gr", "<cmd>Gitsigns reset_hunk<CR>", "Reset hunk")
+map("n", "]h", "<cmd>Gitsigns next_hunk<CR>", "Next hunk")
+map("n", "[h", "<cmd>Gitsigns prev_hunk<CR>", "Previous hunk")
+
+local lazygit_term
+map("n", "<leader>gl", function()
+	lazygit_term = lazygit_term
+		or require("toggleterm.terminal").Terminal:new({ cmd = "lazygit", direction = "float", hidden = true })
+	lazygit_term:toggle()
+end, "Lazygit")
+map("t", "<Esc><Esc>", "<C-\\><C-n>", "Exit terminal mode")
+map("n", "<leader>cs", "<cmd>AerialToggle! right<CR>", "Symbol outline")
+map("n", "<leader>qs", function()
+	require("persistence").load()
+end, "Restore session")
+map("n", "<leader>ql", function()
+	require("persistence").load({ last = true })
+end, "Restore last session")
+map("n", "<leader>qd", function()
+	require("persistence").stop()
+end, "Don't save current session")
+
 map("n", "<leader>sn", "<cmd>Noice<CR>", "Noice message history")
 map("n", "<leader>nl", "<cmd>Noice last<CR>", "Show last message")
 map("n", "<leader>st", "<cmd>TodoTelescope<CR>", "Search TODOs")
 map("n", "<leader>m", "<cmd>RenderMarkdown toggle<CR>", "Toggle Markdown rendering")
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", "Clear search highlight")
 
--- plugins & LSP
 require("plugins")
+require("dev")
 require("lsp")

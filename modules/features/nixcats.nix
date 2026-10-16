@@ -28,7 +28,14 @@ let
           prettier
           yaml-language-server
           vscode-json-languageserver
-          emmet-ls
+          emmet-language-server
+          prettierd
+          vscode-js-debug
+          bash-language-server
+          shfmt
+          marksman
+          lazygit
+          git
           cargo
           rustc
           clippy
@@ -44,6 +51,14 @@ let
           cmake
           gnumake
           lldb
+          gdb
+          valgrind
+          cppcheck
+          bear
+          ninja
+          pkg-config
+          neocmakelsp
+          gersemi
           ueberzugpp
           imagemagick
         ];
@@ -83,6 +98,33 @@ let
           indent-blankline-nvim
           nvim-treesitter.withAllGrammars
           conform-nvim
+          nvim-lint
+          lazydev-nvim
+          rustaceanvim
+          crates-nvim
+          nvim-dap
+          nvim-dap-ui
+          nvim-nio
+          nvim-dap-virtual-text
+          neotest
+          neotest-vitest
+          neotest-jest
+          neotest-gtest
+          FixCursorHold-nvim
+          overseer-nvim
+          cmake-tools-nvim
+          clangd_extensions-nvim
+          SchemaStore-nvim
+          nvim-ts-context-commentstring
+          oil-nvim
+          diffview-nvim
+          neogit
+          aerial-nvim
+          nvim-treesitter-context
+          toggleterm-nvim
+          persistence-nvim
+          tiny-inline-diagnostic-nvim
+          grug-far-nvim
         ];
       };
     };

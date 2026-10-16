@@ -1,4 +1,4 @@
--- mini
+require("ts_context_commentstring").setup({ enable_autocmd = false })
 require("mini.comment").setup({
 	mappings = {
 		comment = "<leader>/",
@@ -10,11 +10,41 @@ require("mini.comment").setup({
 		ignore_blank_line = false,
 		pad_comment_parts = true,
 		start_of_line = false,
+		custom_commentstring = function()
+			return require("ts_context_commentstring").calculate_commentstring() or vim.bo.commentstring
+		end,
 	},
 })
 require("mini.icons").setup({})
+require("mini.bufremove").setup({})
+require("mini.move").setup({})
+require("mini.surround").setup({
+	mappings = {
+		add = "gsa",
+		delete = "gsd",
+		find = "gsf",
+		find_left = "gsF",
+		highlight = "gsh",
+		replace = "gsr",
+		update_n_lines = "gsn",
+	},
+})
+do
+	local ai = require("mini.ai")
+	ai.setup({
+		n_lines = 500,
+		custom_textobjects = {
+			f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
+			c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }),
+			a = ai.gen_spec.treesitter({ a = "@parameter.outer", i = "@parameter.inner" }),
+			o = ai.gen_spec.treesitter({
+				a = { "@conditional.outer", "@loop.outer" },
+				i = { "@conditional.inner", "@loop.inner" },
+			}),
+		},
+	})
+end
 
--- alpha
 require("alpha").setup({
 	layout = {
 		{ type = "padding", val = 2 },
@@ -32,7 +62,6 @@ require("alpha").setup({
 	},
 })
 
--- image
 require("image").setup({
 	backend = "ueberzug",
 	processor = "magick_cli",
@@ -89,6 +118,23 @@ require("gitsigns").setup({
 })
 
 require("which-key").setup({ preset = "modern", delay = 300 })
+require("which-key").add({
+	{ "<leader>b", group = "buffer" },
+	{ "<leader>c", group = "code" },
+	{ "<leader>d", group = "debug" },
+	{ "<leader>f", group = "find" },
+	{ "<leader>g", group = "git" },
+	{ "<leader>gs", desc = "Stage hunk" },
+	{ "<leader>k", group = "cmake" },
+	{ "<leader>n", group = "noice" },
+	{ "<leader>o", group = "overseer" },
+	{ "<leader>q", group = "session" },
+	{ "<leader>r", group = "rename / rust" },
+	{ "<leader>s", group = "search" },
+	{ "<leader>t", group = "test" },
+	{ "<leader>x", group = "diagnostics" },
+	{ "gs", group = "surround" },
+})
 require("trouble").setup()
 
 require("harpoon"):setup({
@@ -174,7 +220,6 @@ require("colorizer").setup({
 	},
 })
 
--- blink.cmp
 require("blink.cmp").setup({
 	completion = {
 		documentation = { auto_show = true },
@@ -191,10 +236,15 @@ require("blink.cmp").setup({
 		["<Tab>"] = { "select_next", "fallback" },
 		["<S-Tab>"] = { "select_prev", "fallback" },
 	},
-	sources = { default = { "lsp", "path", "snippets", "buffer" } },
+	snippets = { preset = "luasnip" },
+	sources = {
+		default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+		providers = {
+			lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 100 },
+		},
+	},
 })
 
--- cord (Discord presence)
 local lang_names = {
 	javascript = "JavaScript",
 	javascriptreact = "JavaScript React",
@@ -278,7 +328,6 @@ require("cord").setup({
 	advanced = { discord = { reconnect = { enabled = true, interval = 5000, initial = true } } },
 })
 
--- lualine (same grey theme for every mode)
 local mode_theme = {
 	a = { fg = "#111111", bg = "#aaaaaa", gui = "bold" },
 	b = { fg = "#aaaaaa", bg = "#222222" },
@@ -335,7 +384,6 @@ require("lualine").setup({
 	},
 })
 
--- telescope
 local telescope = require("telescope")
 telescope.setup({
 	defaults = {
@@ -352,7 +400,6 @@ telescope.setup({
 })
 pcall(telescope.load_extension, "fzf")
 
--- indent-blankline
 require("ibl").setup({
 	indent = { char = "┊" },
 	scope = { enabled = true, char = "┃" },
@@ -361,28 +408,79 @@ require("ibl").setup({
 	},
 })
 
--- conform
+local prettier = { "prettierd", "prettier", stop_after_first = true }
 require("conform").setup({
 	formatters_by_ft = {
 		nix = { "nixfmt" },
 		lua = { "stylua" },
-		javascript = { "prettier" },
-		javascriptreact = { "prettier" },
-		typescript = { "prettier" },
-		typescriptreact = { "prettier" },
-		json = { "prettier" },
-		jsonc = { "prettier" },
-		yaml = { "prettier" },
-		markdown = { "prettier" },
-		markdown_inline = { "prettier" },
-		html = { "prettier" },
-		css = { "prettier" },
+		javascript = prettier,
+		javascriptreact = prettier,
+		typescript = prettier,
+		typescriptreact = prettier,
+		json = prettier,
+		jsonc = prettier,
+		yaml = prettier,
+		markdown = prettier,
+		["markdown.mdx"] = prettier,
+		html = prettier,
+		css = prettier,
+		scss = prettier,
+		less = prettier,
+		graphql = prettier,
 		rust = { "rustfmt" },
 		toml = { "taplo" },
+		sh = { "shfmt" },
+		bash = { "shfmt" },
+		cmake = { "gersemi" },
 		c = { "clang-format" },
 		cpp = { "clang-format" },
 		objc = { "clang-format" },
 		objcpp = { "clang-format" },
 	},
-	format_on_save = { lsp_fallback = true, timeout_ms = 1000 },
+	format_on_save = { lsp_format = "fallback", timeout_ms = 1000 },
+})
+
+local lint = require("lint")
+lint.linters_by_ft = {
+	nix = { "statix", "deadnix" },
+}
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+	callback = function()
+		lint.try_lint()
+	end,
+})
+
+require("lazydev").setup({})
+
+require("oil").setup({
+	default_file_explorer = true,
+	skip_confirm_for_simple_edits = true,
+	view_options = { show_hidden = true },
+	keymaps = {
+		["q"] = "actions.close",
+		["<Esc>"] = "actions.close",
+	},
+})
+
+require("neogit").setup({ integrations = { diffview = true, telescope = true } })
+require("diffview").setup({})
+
+require("aerial").setup({
+	backends = { "lsp", "treesitter" },
+	layout = { min_width = 30 },
+	show_guides = true,
+})
+require("treesitter-context").setup({ max_lines = 3, trim_scope = "outer" })
+
+require("toggleterm").setup({
+	open_mapping = [[<M-i>]],
+	direction = "float",
+	float_opts = { border = "curved" },
+})
+
+require("persistence").setup({})
+require("grug-far").setup({})
+require("tiny-inline-diagnostic").setup({
+	preset = "modern",
+	options = { show_source = { enabled = true }, multilines = { enabled = true } },
 })
