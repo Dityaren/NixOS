@@ -29,15 +29,12 @@
           extendedCopy
           bookmark
           bestMoment
-          catJamSynced
         ];
 
         enabledCustomApps = with spicePkgs.apps; [
           lyricsPlus
           newReleases
           historyInSidebar
-          ncsVisualizer
-          betterLibrary
         ];
       };
     };
