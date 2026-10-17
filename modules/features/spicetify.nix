@@ -1,6 +1,8 @@
-{ self, inputs, ... }: {
+{ inputs, ... }:
+
+{
   flake.nixosModules.spicetify =
-    { pkgs, lib, ... }:
+    { pkgs, ... }:
     let
       spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
     in
@@ -12,9 +14,11 @@
       programs.spicetify = {
         enable = true;
 
-        theme = spicePkgs.themes.text;
-
-        colorScheme = "Kanagawa";
+        # `theme` and `colorScheme` are deliberately not set here: Stylix's spicetify
+        # target (stylix.targets.spicetify, on by default with stylix.autoEnable)
+        # generates a theme from the base16 scheme and sets both options itself.
+        # Setting them here as well would clash with it.
+        # To override Stylix, use lib.mkForce on the option you want to replace.
 
         enabledExtensions = with spicePkgs.extensions; [
           adblockify
@@ -35,7 +39,6 @@
           ncsVisualizer
           betterLibrary
         ];
-
       };
     };
 }
