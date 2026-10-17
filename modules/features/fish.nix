@@ -11,7 +11,6 @@
       programs.fish.enable = true;
 
       environment.systemPackages = with pkgs; [
-        eza
         bat
         ripgrep
         fd
@@ -104,6 +103,9 @@
             gp = "git push";
             gl = "git log --oneline --graph --decorate";
 
+            l = "eza -l --git";
+            tree = "eza --tree";
+
             c = "clear";
             ".." = "cd ..";
             "..." = "cd ../..";
@@ -126,8 +128,6 @@
             set -gx LESS "-R"
 
             set -gx DEVENV_TUI false
-
-            set -gx eza_params "--group-directories-first --icons --color=always"
 
             starship init fish | source
 
@@ -156,16 +156,19 @@
               name = "sponge";
               src = pkgs.fishPlugins.sponge.src;
             }
+          ];
+        };
 
-            {
-              name = "fish-eza";
-              src = pkgs.fetchFromGitHub {
-                owner = "givensuman";
-                repo = "fish-eza";
-                rev = "main";
-                hash = "sha256-cFUHMSEMxq/XSeKOLCUArgM9ogY6NqrPmhxaHn5bbQs=";
-              };
-            }
+        # Installs eza and defines the aliases ls, ll, la, lt and lla for fish.
+        # Icons need a Nerd Font in the terminal (set through Stylix).
+        programs.eza = {
+          enable = true;
+          enableFishIntegration = true;
+          icons = "auto";
+          git = true;
+          extraOptions = [
+            "--group-directories-first"
+            "--time-style=long-iso"
           ];
         };
 
@@ -185,17 +188,6 @@
             "--prompt=❯ "
             "--pointer=▶"
             "--marker=✓"
-            "--color=bg:#16161D,bg+:#1F1F28"
-            "--color=fg:#DCD7BA,fg+:#DCD7BA"
-            "--color=hl:#7E9CD8,hl+:#7E9CD8"
-            "--color=border:#2A2A37"
-            "--color=prompt:#7E9CD8"
-            "--color=pointer:#DCA561"
-            "--color=marker:#6A9589"
-            "--color=spinner:#7FB4CA"
-            "--color=header:#727169"
-            "--color=info:#727169"
-            "--color=query:#DCD7BA"
           ];
         };
 
@@ -234,14 +226,14 @@
 
             username = {
               show_always = false;
-              style_user = "bold lavender";
+              style_user = "bold bright-blue";
               style_root = "bold red";
               format = "[$user]($style) ";
             };
 
             hostname = {
               ssh_only = true;
-              style = "bold mauve";
+              style = "bold purple";
               format = "on [$hostname]($style) ";
             };
 
@@ -255,7 +247,7 @@
 
             git_branch = {
               symbol = "󰘬 ";
-              style = "bold mauve";
+              style = "bold purple";
               format = "on [$symbol$branch]($style) ";
             };
 
@@ -319,7 +311,7 @@
             character = {
               success_symbol = "[❯](bold green)";
               error_symbol = "[❯](bold red)";
-              vimcmd_symbol = "[❮](bold mauve)";
+              vimcmd_symbol = "[❮](bold purple)";
               vimcmd_replace_one_symbol = "[❮](bold red)";
               vimcmd_replace_symbol = "[❮](bold red)";
               vimcmd_visual_symbol = "[❮](bold yellow)";
