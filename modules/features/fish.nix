@@ -112,7 +112,7 @@
           };
 
           shellAbbrs = {
-            rebuild = "sudo nixos-rebuild switch --flake ${vars.flakeRoot}#${vars.hostname}";
+            rebuild = "sudo nixos-rebuild switch --impure --flake ${vars.flakeRoot}#${vars.hostname}";
             update = "nix flake update --flake ${vars.flakeRoot}";
           };
 
