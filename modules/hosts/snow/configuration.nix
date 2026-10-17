@@ -19,19 +19,20 @@
         self.nixosModules.ly
         self.nixosModules.xdg
         self.nixosModules.nixcats
-        self.nixosModules.spicetify
+        # self.nixosModules.spicetify
         self.nixosModules.onlyoffice
         self.nixosModules.gaming
         self.nixosModules.screenshot
         self.nixosModules.fish
-        self.nixosModules.alacritty
+        # self.nixosModules.alacritty
         self.nixosModules.zen-browser
         self.nixosModules.power-management
         self.nixosModules.tmux
-        # self.nixosModules.ollama
         self.nixosModules.anime-game-launcher
         self.nixosModules.mango-dms
         self.nixosModules.foot
+        self.nixosModules.stylix
+        self.nixosModules.llama
 
       ];
 
@@ -130,7 +131,6 @@
 
           qemu
           virt-manager
-          lmstudio
           gh
           qbittorrent-enhanced
           sqlit-tui
