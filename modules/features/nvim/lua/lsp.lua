@@ -13,7 +13,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end
 		if client:supports_method("textDocument/codeLens", args.buf) then
 			if vim.lsp.codelens.enable then
-				vim.lsp.codelens.enable(true, { bufnr = args.buf }) -- Neovim 0.12+
+				vim.lsp.codelens.enable(true, { bufnr = args.buf })
 			else
 				vim.lsp.codelens.refresh({ bufnr = args.buf })
 				vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {

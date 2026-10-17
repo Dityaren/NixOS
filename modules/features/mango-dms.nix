@@ -1,7 +1,6 @@
 { inputs, ... }:
 
 let
-  # DMS integration for mango >= 0.18 (snake_case config keys, see mangowm docs).
   dmsSettings = {
     special_dim = [ "0.5" ];
     special_gap_inner_horizontal = [ "10" ];
@@ -17,7 +16,6 @@ let
 
     layer_rule = [ "no_animation:1,layer_name:^dms" ];
 
-    # org.quickshell is the legacy app id, com.danklinux.dms the current one.
     window_rule = [ "is_floating:1,app_id:^(org\\.quickshell|com\\.danklinux\\.dms)$" ];
 
     bind = [
@@ -95,9 +93,6 @@ let
     ];
   };
 
-  # DMS rewrites these at runtime (colors, gaps/radius, monitors). Paths are relative
-  # to ~/.config/mango and optional, so a missing file is not an error (this also
-  # matters for the build-time `mango -p` check, where they never exist).
   dmsIncludes = ''
     source_optional=./dms/colors.conf
     source_optional=./dms/layout.conf
@@ -107,7 +102,6 @@ let
   homeModule =
     { lib, ... }:
     {
-      # Already includes wayland.windowManager.mango.*; don't import it again elsewhere.
       imports = [
         inputs.mango.hmModules.mango
       ];
@@ -119,15 +113,11 @@ let
 
         extraConfig = lib.mkAfter dmsIncludes;
 
-        # mango's HM module only imports the environment into systemd and starts
-        # mango-session.target (-> graphical-session.target -> dms.service) from
-        # autostart.sh, and only wires that script in when autostart_sh is non-empty.
         autostart_sh = lib.mkDefault "# systemd session is started above";
       };
     };
 in
 {
-  # System side: mango compositor + DankMaterialShell (+ the user side for HM users).
   flake.nixosModules.mango-dms =
     {
       lib,
@@ -149,27 +139,17 @@ in
 
       config = lib.mkMerge [
         {
-          # mango's module already handles portals, polkit and xwayland.
           programs.mango = {
             enable = lib.mkDefault true;
             addLoginEntry = lib.mkDefault true;
           };
 
-          # nixpkgs' native DMS module; starts dms.service on graphical-session.target.
-          # The package comes from the DMS flake: nixpkgs ships 1.6.x, which always writes
-          # the old run-together mango keys (bordercolor, ...) into ~/.config/mango/dms/*.conf.
-          # mango >= 0.18 rejects those ("unknown keyword: bordercolor"). DMS master detects
-          # the installed mango and writes snake_case (border_color) instead.
           programs.dms-shell = {
             enable = lib.mkDefault true;
             systemd.enable = lib.mkDefault true;
             package = lib.mkDefault inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.default;
           };
 
-          # mango's fallback config path is compiled in as /etc/mango/config.conf, which
-          # does not exist on NixOS. Without a ~/.config/mango/config.conf it fails with
-          # "Failed to open config file". This is only read when the user has no config of
-          # their own, i.e. no systemd session target, so DMS is started directly here.
           environment.etc."mango/config.conf".text = lib.mkDefault ''
             ${render dmsSettings}
             ${dmsIncludes}
@@ -177,13 +157,11 @@ in
           '';
         }
 
-        # Per-user config for every Home Manager user (no username needed).
         (lib.optionalAttrs (options ? home-manager) {
           home-manager.sharedModules = [ homeModule ];
         })
       ];
     };
 
-  # User side, for standalone Home Manager use.
   flake.homeModules.mango-dms = homeModule;
 }

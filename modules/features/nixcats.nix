@@ -125,6 +125,7 @@ let
           persistence-nvim
           tiny-inline-diagnostic-nvim
           grug-far-nvim
+          minuet-ai-nvim
         ];
       };
     };
@@ -147,7 +148,6 @@ let
   };
 in
 {
-  #   nvim = { enable = true; packageNames = [ "nvim" ]; };
   flake.nixosModules.nixcats = utils.mkNixosModules {
     inherit
       defaultPackageName

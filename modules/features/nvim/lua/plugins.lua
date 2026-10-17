@@ -220,6 +220,42 @@ require("colorizer").setup({
 	},
 })
 
+require("minuet").setup({
+	provider = "openai_fim_compatible",
+	n_completions = 1,
+	context_window = 512,
+	request_timeout = 3,
+	provider_options = {
+		openai_fim_compatible = {
+			api_key = "TERM",
+			name = "llama.cpp",
+			end_point = "http://127.0.0.1:8012/v1/completions",
+			model = "PLACEHOLDER",
+			optional = { max_tokens = 56, top_p = 0.9 },
+			template = {
+				prompt = function(context_before_cursor, context_after_cursor)
+					return "<|fim_prefix|>"
+						.. context_before_cursor
+						.. "<|fim_suffix|>"
+						.. context_after_cursor
+						.. "<|fim_middle|>"
+				end,
+				suffix = false,
+			},
+		},
+	},
+	virtualtext = {
+		auto_trigger_ft = { "typescript" },
+		keymap = {
+			accept = "<A-A>",
+			accept_line = "<A-a>",
+			dismiss = "<A-e>",
+			prev = "<A-[>",
+			next = "<A-]>",
+		},
+	},
+})
+
 require("blink.cmp").setup({
 	completion = {
 		documentation = { auto_show = true },
@@ -235,12 +271,20 @@ require("blink.cmp").setup({
 		["<C-m>"] = { "accept", "fallback" },
 		["<Tab>"] = { "select_next", "fallback" },
 		["<S-Tab>"] = { "select_prev", "fallback" },
+		["<A-y>"] = require("minuet").make_blink_map(),
 	},
 	snippets = { preset = "luasnip" },
 	sources = {
 		default = { "lazydev", "lsp", "path", "snippets", "buffer" },
 		providers = {
 			lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 100 },
+			minuet = {
+				name = "minuet",
+				module = "minuet.blink",
+				async = true,
+				timeout_ms = 3000,
+				score_offset = 50,
+			},
 		},
 	},
 })
