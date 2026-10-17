@@ -19,7 +19,7 @@
         self.nixosModules.ly
         self.nixosModules.xdg
         self.nixosModules.nixcats
-        # self.nixosModules.spicetify
+        self.nixosModules.spicetify
         self.nixosModules.onlyoffice
         self.nixosModules.gaming
         self.nixosModules.screenshot
