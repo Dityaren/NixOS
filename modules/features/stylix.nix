@@ -23,7 +23,9 @@
       dmsWallpaper =
         if isImpure && builtins.pathExists stateFile then
           let
-            path = lib.removePrefix "file://" ((builtins.fromJSON (builtins.readFile stateFile)).${wallpaperKey} or "");
+            path = lib.removePrefix "file://" (
+              (builtins.fromJSON (builtins.readFile stateFile)).${wallpaperKey} or ""
+            );
           in
           if path != "" && builtins.pathExists path && builtins.readFileType path != "directory" then
             builtins.path {
@@ -65,12 +67,14 @@
           EOF
 
           cat > config.toml <<EOF
+          [config]
+
           [templates.base16]
           input_path = "$PWD/template.yaml"
           output_path = "$out"
           EOF
 
-          matugen image ${image} --mode dark --config config.toml
+          matugen image ${image} --mode dark --config config.toml --prefer=saturation
         '';
 
       # Used when the DMS wallpaper cannot be read (pure build, missing file, ...).
@@ -89,7 +93,9 @@
           if dmsWallpaper != null then
             "${mkMatugenScheme dmsWallpaper}"
           else
-            lib.warnIf isImpure "stylix: could not read the DMS wallpaper from ${stateFile}; using the fallback scheme" fallbackScheme;
+            lib.warnIf isImpure
+              "stylix: could not read the DMS wallpaper from ${stateFile}; using the fallback scheme"
+              fallbackScheme;
 
         fonts = {
           monospace = {
