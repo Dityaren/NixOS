@@ -273,3 +273,5 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>", "Clear search highlight")
 require("plugins")
 require("dev")
 require("lsp")
+
+require("strip_comments").setup()
