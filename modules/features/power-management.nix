@@ -1,8 +1,10 @@
-{ ... }:
+{ lib, ... }:
 {
   flake.nixosModules.power-management = {
     services.power-profiles-daemon.enable = true;
-    powerManagement.enable = true;
-    networking.networkmanager.wifi.powersave = true;
+
+    services.upower.enable = lib.mkDefault true;
+
+    networking.networkmanager.wifi.powersave = false;
   };
 }
