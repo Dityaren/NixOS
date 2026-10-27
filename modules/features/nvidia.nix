@@ -1,10 +1,7 @@
-{ self, inputs, ... }: {
+{ ... }:
+{
   flake.nixosModules.nvidia =
-    {
-      config,
-      pkgs,
-      ...
-    }:
+    { config, ... }:
     {
       services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -23,7 +20,7 @@
 
           powerManagement = {
             enable = true;
-            finegrained = true;
+            finegrained = false;
           };
 
           nvidiaSettings = true;
@@ -40,14 +37,6 @@
         };
       };
 
-      boot.kernelParams = [
-        "nvidia-drm.modeset=1"
-      ];
-
-      environment.sessionVariables = {
-        NIXOS_OZONE_WL = "1";
-        MOZ_ENABLE_WAYLAND = "1";
-        ELECTRON_OZONE_PLATFORM_HINT = "auto";
-      };
+      environment.sessionVariables.WLR_DRM_DEVICES = "/dev/dri/by-path/pci-0000:00:02.0-card";
     };
 }
