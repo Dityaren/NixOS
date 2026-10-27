@@ -336,7 +336,7 @@ require("cord").setup({
 		tooltip = "0x0",
 		icon = "https://c.tenor.com/4mBr4MBkeukAAAAd/tenor.gif",
 	},
-	display = { theme = "minecraft", flavor = "light", view = "editor", swap_icons = true },
+	display = { theme = "catppuccin", flavor = "accent", view = "editor", swap_icons = true },
 	buttons = nil,
 	text = {
 		workspace = function(opts)
