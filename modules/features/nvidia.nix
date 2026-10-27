@@ -36,7 +36,10 @@
           };
         };
       };
+      services.udev.extraRules = ''
+        SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:00:02.0", SYMLINK+="dri/igpu"
+      '';
 
-      environment.sessionVariables.WLR_DRM_DEVICES = "/dev/dri/by-path/pci-0000:00:02.0-card";
+      environment.sessionVariables.WLR_DRM_DEVICES = "/dev/dri/igpu";
     };
 }
