@@ -334,7 +334,7 @@ end
 require("cord").setup({
 	editor = {
 		tooltip = "0x0",
-		icon = "https://c.tenor.com/VDX5Ss2Hks0AAAAd/tenor.gif",
+		icon = "https://c.tenor.com/4mBr4MBkeukAAAAd/tenor.gif",
 	},
 	display = { theme = "minecraft", flavor = "light", view = "editor", swap_icons = true },
 	buttons = nil,
