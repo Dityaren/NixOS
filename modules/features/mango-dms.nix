@@ -9,8 +9,7 @@ let
     special_gap_outer_vertical = [ "20" ];
 
     env = [
-      "QT_QPA_PLATFORM,wayland"
-      "ELECTRON_OZONE_PLATFORM_HINT,auto"
+      "QT_QPA_PLATFORM,wayland;xcb"
       "QT_QPA_PLATFORMTHEME,gtk3"
     ];
 
@@ -99,6 +98,8 @@ let
     source_optional=./dms/outputs.conf
   '';
 
+  importEnv = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE";
+
   homeModule =
     { lib, ... }:
     {
@@ -113,7 +114,10 @@ let
 
         extraConfig = lib.mkAfter dmsIncludes;
 
-        autostart_sh = lib.mkDefault "# systemd session is started above";
+        autostart_sh = lib.mkDefault ''
+          # systemd session is started above
+          ${importEnv}
+        '';
       };
     };
 in
@@ -132,9 +136,6 @@ in
           lib.concatLists (lib.mapAttrsToList (key: values: map (value: "${key}=${value}") values) settings)
         );
 
-      # nixpkgs renamed programs.dms-shell -> programs.dux-shell.
-      # Target whichever one exists so this module works on both old and new revisions,
-      # and never routes mkDefault values through the deprecated alias.
       shellOpt = if options.programs ? dux-shell then "dux-shell" else "dms-shell";
     in
     {
@@ -155,10 +156,12 @@ in
             package = lib.mkDefault inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.default;
           };
 
+          environment.sessionVariables.NIXOS_OZONE_WL = lib.mkDefault "1";
+
           environment.etc."mango/config.conf".text = lib.mkDefault ''
             ${render dmsSettings}
             ${dmsIncludes}
-            exec_once=dms run
+            exec_once=${importEnv}
           '';
         }
 
