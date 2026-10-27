@@ -131,6 +131,11 @@ in
         lib.concatStringsSep "\n" (
           lib.concatLists (lib.mapAttrsToList (key: values: map (value: "${key}=${value}") values) settings)
         );
+
+      # nixpkgs renamed programs.dms-shell -> programs.dux-shell.
+      # Target whichever one exists so this module works on both old and new revisions,
+      # and never routes mkDefault values through the deprecated alias.
+      shellOpt = if options.programs ? dux-shell then "dux-shell" else "dms-shell";
     in
     {
       imports = [
@@ -144,7 +149,7 @@ in
             addLoginEntry = lib.mkDefault true;
           };
 
-          programs.dms-shell = {
+          programs.${shellOpt} = {
             enable = lib.mkDefault true;
             systemd.enable = lib.mkDefault true;
             package = lib.mkDefault inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.default;
