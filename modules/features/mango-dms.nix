@@ -2,6 +2,9 @@
 
 let
   dmsSettings = {
+    animations = [ "0" ];
+    animation_duration_tag = [ "0" ];
+
     special_dim = [ "0.5" ];
     special_gap_inner_horizontal = [ "10" ];
     special_gap_inner_vertical = [ "10" ];
