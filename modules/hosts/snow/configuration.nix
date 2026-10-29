@@ -128,6 +128,7 @@
 
       environment = {
         systemPackages = with pkgs; [
+          nnn
           libreoffice
           alsa-utils
           brightnessctl
