@@ -20,6 +20,11 @@ let
 
     window_rule = [ "is_floating:1,app_id:^(org\\.quickshell|com\\.danklinux\\.dms)$" ];
 
+    mousebind = [
+      "SUPER,btn_left,moveresize,curmove"
+      "SUPER,btn_right,moveresize,curresize"
+    ];
+
     bind = [
       "SUPER,space,spawn,dms ipc call spotlight toggle"
       "SUPER,v,spawn,dms ipc call clipboard toggle"
