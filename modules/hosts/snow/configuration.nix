@@ -30,6 +30,7 @@
         self.nixosModules.tmux
         self.nixosModules.anime-game-launcher
         self.nixosModules.mango-dms
+        self.nixosModules.i3wm
         self.nixosModules.foot
         self.nixosModules.stylix
         self.nixosModules.llama
