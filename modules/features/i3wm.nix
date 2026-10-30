@@ -58,6 +58,9 @@
         bindsym $mod+Shift+e exec i3-nagbar -t warning -m 'Exit i3?' -B 'Yes' 'i3-msg exit'
         bindsym $mod+Alt+l exec loginctl lock-session
 
+        # Clipboard history (clipmenu daemon runs as a service, see below).
+        bindsym $mod+c exec env CM_LAUNCHER=rofi clipmenu
+
         # ---- focus / study tools ----
         bindsym $mod+F12 exec focus-mode
         bindsym $mod+p exec alacritty --class pomodoro -e pomodoro
@@ -144,6 +147,7 @@
             rofi
             dunst
             libnotify
+            xclip
             alacritty
             brightnessctl
             focusMode
@@ -151,6 +155,8 @@
           ];
         };
       };
+
+      services.clipmenu.enable = true;
 
       programs.xss-lock = {
         enable = true;
