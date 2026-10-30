@@ -129,7 +129,6 @@
         }
 
         # ---- autostart ----
-        exec_always --no-startup-id xsetroot -solid "#1e1e2e"
         exec --no-startup-id dunst
       '';
     in
@@ -147,7 +146,6 @@
             libnotify
             alacritty
             brightnessctl
-            xsetroot
             focusMode
             pomodoro
           ];

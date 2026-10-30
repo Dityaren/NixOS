@@ -160,7 +160,7 @@ in
 
           programs.${shellOpt} = {
             enable = lib.mkDefault true;
-            systemd.enable = lib.mkDefault true;
+            systemd.enable = lib.mkDefault false;
             package = lib.mkDefault inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.default;
           };
 
@@ -170,6 +170,7 @@ in
             ${render dmsSettings}
             ${dmsIncludes}
             exec_once=${importEnv}
+            exec_once=dms run
           '';
         }
 
