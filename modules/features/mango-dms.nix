@@ -14,6 +14,7 @@ let
     env = [
       "QT_QPA_PLATFORM,wayland;xcb"
       "QT_QPA_PLATFORMTHEME,gtk3"
+      "NIXOS_OZONE_WL,1"
     ];
 
     layer_rule = [ "no_animation:1,layer_name:^dms" ];
@@ -125,6 +126,7 @@ let
         autostart_sh = lib.mkDefault ''
           # systemd session is started above
           ${importEnv}
+          dms run &
         '';
       };
     };
@@ -163,8 +165,6 @@ in
             systemd.enable = lib.mkDefault false;
             package = lib.mkDefault inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.default;
           };
-
-          environment.sessionVariables.NIXOS_OZONE_WL = lib.mkDefault "1";
 
           environment.etc."mango/config.conf".text = lib.mkDefault ''
             ${render dmsSettings}
