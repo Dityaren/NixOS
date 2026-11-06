@@ -129,6 +129,7 @@
 
       environment = {
         systemPackages = with pkgs; [
+          helix
           nnn
           libreoffice
           alsa-utils
