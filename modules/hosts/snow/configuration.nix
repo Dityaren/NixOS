@@ -70,7 +70,12 @@
 
       networking = {
         hostName = vars.hostname;
-        networkmanager.enable = true;
+        networkmanager = {
+          enable = true;
+          plugins = with pkgs; [
+            networkmanager-openvpn
+          ];
+        };
         nameservers = [
           "9.9.9.9"
           "149.112.112.112"
