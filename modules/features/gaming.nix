@@ -4,11 +4,13 @@
     {
       programs = {
         gamemode.enable = true;
+        steam.enable = true;
+        steam.gamescopeSession.enable = true;
       };
 
       environment.systemPackages = with pkgs; [
-        # protonup-qt
-        # gamescope
+        protonup-qt
+        gamescope
         # mangohud
         # goverlay
         vulkan-tools
