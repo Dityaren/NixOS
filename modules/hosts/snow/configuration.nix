@@ -134,6 +134,7 @@
 
       environment = {
         systemPackages = with pkgs; [
+          vlc
           helix
           nnn
           libreoffice
