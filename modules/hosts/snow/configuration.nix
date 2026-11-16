@@ -46,6 +46,9 @@
       programs.nix-ld.libraries = with pkgs; [
         nodejs_24
         corepack_24
+        stdenv.cc.cc
+        openssl
+        pkg-config
       ];
 
       programs.direnv = {
@@ -134,6 +137,9 @@
 
       environment = {
         systemPackages = with pkgs; [
+          pkg-config
+          stdenv.cc.cc
+          openssl
           vlc
           helix
           nnn
