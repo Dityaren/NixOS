@@ -41,10 +41,10 @@
         # Each component module drops its own snippet here (terminal sets $term).
         include /etc/sway/config.d/*
 
-        set $ws1 "1:code"
-        set $ws2 "2:term"
+        set $ws1 "1:term"
+        set $ws2 "2:web"
         set $ws3 "3:docs"
-        set $ws4 "4:web"
+        set $ws4 "4:music"
         set $ws5 "5:chat"
 
         font pango:monospace 10
