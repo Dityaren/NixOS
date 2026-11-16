@@ -12,7 +12,7 @@
       # Where DMS remembers the current wallpaper. The docs do not say, so verify on your
       # machine:  jq -r .wallpaperPath ~/.local/state/DankMaterialShell/session.json
       # If the file or the key differs, change these two lines.
-      stateFile = "/home/${vars.username}/.local/state/DankMaterialShell/session.json";
+      stateFile = "/home/${vars.username}/.local/state/wallpaper/session.json";
       wallpaperKey = "wallpaperPath";
 
       # Reading files outside the flake only works with `nixos-rebuild --impure`.
