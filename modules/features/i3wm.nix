@@ -50,8 +50,8 @@
         assign [class="(?i)discord"] $ws5
 
         # ---- launching / session ----
-        bindsym $mod+Return exec alacritty
-        bindsym $mod+space exec rofi -show drun
+        bindsym $mod+t exec alacritty
+        bindsym $mod+d exec rofi -show drun
         bindsym $mod+Shift+space floating toggle
         bindsym $mod+q kill
         bindsym $mod+Shift+r restart
