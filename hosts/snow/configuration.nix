@@ -12,7 +12,8 @@
     }:
     {
       imports = [
-        self.nixosModules.snowHardware
+        self.nixosModules.hardware
+
         self.nixosModules.home-manager
         self.nixosModules.audio
         self.nixosModules.nvidia

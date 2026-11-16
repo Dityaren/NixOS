@@ -1,7 +1,7 @@
 { self, inputs, ... }:
 
 {
-  flake.nixosModules.snowHardware =
+  flake.nixosModules.hardware =
     {
       config,
       lib,
