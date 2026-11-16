@@ -333,8 +333,8 @@ end
 
 require("cord").setup({
 	editor = {
-		tooltip = "0x0",
-		icon = "https://c.tenor.com/4mBr4MBkeukAAAAd/tenor.gif",
+		tooltip = "Not THAT kind of Water Imp! ",
+		icon = "https://c.tenor.com/HbxHKsa2TPsAAAAd/tenor.gif",
 	},
 	display = { theme = "catppuccin", flavor = "accent", view = "editor", swap_icons = true },
 	buttons = nil,
