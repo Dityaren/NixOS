@@ -1,4 +1,3 @@
-# grim + slurp (on demand only, zero idle memory). Adding Shift to any binding opens satty to edit.
 { ... }:
 {
   flake.nixosModules.sway-screenshot =
@@ -9,8 +8,8 @@
       jq = "${pkgs.jq}/bin/jq";
 
       screenshot = pkgs.writeShellScriptBin "screenshot" ''
-        mode="''${1:-region}"   # region | screen | window
-        edit="''${2:-}"        # "edit" opens swappy instead of saving directly
+        mode="''${1:-region}"
+        edit="''${2:-}"
 
         dir="$HOME/Pictures/Screenshots"
         mkdir -p "$dir"
