@@ -1,58 +1,92 @@
-# NixOS Configuration
+<div align="center">
 
-<p align="center">
-  <img src="./assets/preview.png" alt="NixOS Desktop">
-</p>
+# ❄️ snow
 
-My personal NixOS configuration built with NixOS Flakes and modular features.
+**Modular, declarative NixOS — one flake, zero drift.**
 
-## Setup
+![NixOS](https://img.shields.io/badge/NixOS-unstable-5277C3?style=flat-square&logo=nixos&logoColor=white)
+![Flakes](https://img.shields.io/badge/flakes-enabled-7EBAE4?style=flat-square&logo=nixos&logoColor=white)
+![License](https://img.shields.io/github/license/Dityaren/NixOS?style=flat-square&color=lightgrey)
 
-Clone the repository:
+<img src="assets/preview.png" alt="Desktop preview" width="85%">
+
+</div>
+
+<br>
+
+## ✦ Overview
+
+Every feature lives in its own module and is auto-imported with
+[`import-tree`](https://github.com/vic/import-tree), wired together through
+[`flake-parts`](https://github.com/hercules-ci/flake-parts).
+Add a file, get a feature. Delete it, it's gone.
+
+## ✦ Stack
+
+|                |                                                                       |
+| -------------- | --------------------------------------------------------------------- |
+| **Base**       | NixOS unstable · flake-parts · import-tree                            |
+| **Home**       | home-manager                                                          |
+| **Theming**    | Stylix                                                                |
+| **Compositor** | [Mango](https://github.com/mangowm/mango)                             |
+| **Shell**      | [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) |
+| **Browser**    | Zen Browser                                                           |
+| **Editor**     | nixCats (Neovim)                                                      |
+| **Extras**     | Spicetify · AAGL                                                      |
+
+## ✦ Structure
+
+```
+.
+├── flake.nix        # inputs + import-tree entrypoint
+├── hosts/
+│   └── snow/        # per-machine config & vars
+└── modules/         # one file per feature, auto-imported
+```
+
+## ✦ Install
 
 ```bash
-git clone https://github.com/dityaren/nixos.git
-cd ./nixos
+git clone https://github.com/Dityaren/NixOS.git
+cd NixOS
 ```
 
-Make a copy of `nixos/modules/hosts/snow` in the same directory and rename it into your desired hostname,
+**1.** Copy `hosts/snow` to `hosts/<your-hostname>`.
 
-Make changes into variables:
-
-```text
-modules/hosts/your-host-dir/vars.nix
-```
-
-Change the machine-specific values:
+**2.** Edit the machine variables:
 
 ```nix
 flake.vars = {
-  username = "your-username";
-  hostname = "your-hostname";
+  username     = "your-username";
+  hostname     = "your-hostname";
   stateVersion = "26.05";
-  flakeRoot = "your-nixos-config-location/"; # End with /
+  flakeRoot    = "/path/to/this/repo/"; # trailing slash
 };
 ```
 
-Then rebuild:
+**3.** Replace `hardware-configuration.nix` with your own:
 
 ```bash
-sudo nixos-rebuild switch --flake your-nixos-config-location#your-hostname
+nixos-generate-config --show-hardware-config > hardware-configuration.nix
 ```
 
-## Structure
+**4.** Rebuild:
 
-```text
-.
-├── flake.nix
-├── flake.lock
-└── modules/
-    ├── hosts/
-    │   └── (machine)/
-    │       └── vars.nix
-    │
-    └── features/
-        ├── ...
-        ├── ...
-        └── ...
+```bash
+sudo nixos-rebuild switch --flake .#<your-hostname>
 ```
+
+## ✦ Update
+
+```bash
+nix flake update
+sudo nixos-rebuild switch --flake .#<your-hostname>
+```
+
+<br>
+
+<div align="center">
+
+<sub>MIT licensed · made with ❄️</sub>
+
+</div>
