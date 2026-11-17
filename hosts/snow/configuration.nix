@@ -148,7 +148,6 @@
           brightnessctl
           libreoffice
           sioyek
-          zen-beta
 
           # Multimedia
           alsa-utils
