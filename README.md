@@ -23,16 +23,13 @@ Add a file, get a feature. Delete it, it's gone.
 
 ## ✦ Stack
 
-|                |                                                                       |
-| -------------- | --------------------------------------------------------------------- |
-| **Base**       | NixOS unstable · flake-parts · import-tree                            |
-| **Home**       | home-manager                                                          |
-| **Theming**    | Stylix                                                                |
-| **Compositor** | [Mango](https://github.com/mangowm/mango)                             |
-| **Shell**      | [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) |
-| **Browser**    | Zen Browser                                                           |
-| **Editor**     | nixCats (Neovim)                                                      |
-| **Extras**     | Spicetify · AAGL                                                      |
+|                |                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------- |
+| **Base**       | NixOS unstable · flake-parts · import-tree                                         |
+| **Home**       | home-manager                                                                       |
+| **Theming**    | Stylix                                                                             |
+| **Compositor** | [Mango](https://github.com/mangowm/mango) & [Sway](https://github.com/swaywm/sway) |
+| **Shell**      | [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell)              |
 
 ## ✦ Structure
 
