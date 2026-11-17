@@ -138,6 +138,7 @@
         sway-notifications
         sway-bar
         sway-tray
+        sway-screenshot
         sway-launcher
         sway-lock-idle
       ];
