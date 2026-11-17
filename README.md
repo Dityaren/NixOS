@@ -1,6 +1,5 @@
 <div align="center">
-
-# ❄️ snow
+# NixOS - ❄️ snow
 
 **Modular, declarative NixOS — one flake, multi host.**
 
@@ -8,7 +7,7 @@
 ![Flakes](https://img.shields.io/badge/flakes-enabled-7EBAE4?style=flat-square&logo=nixos&logoColor=white)
 ![License](https://img.shields.io/github/license/Dityaren/NixOS?style=flat-square&color=lightgrey)
 
-<img src="assets/preview.png" alt="Desktop preview" width="85%">
+<img src="assets/preview.png" alt="Desktop preview" width="90%">
 
 </div>
 
@@ -87,6 +86,6 @@ sudo nixos-rebuild switch --flake .#<your-hostname>
 
 <div align="center">
 
-<sub>MIT licensed · made with ❄️</sub>
+<sub>[MIT licensed](https://raw.githubusercontent.com/Dityaren/NixOS/refs/heads/main/LICENSE) · made with ❄️</sub>
 
 </div>
