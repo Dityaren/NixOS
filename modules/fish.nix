@@ -245,7 +245,7 @@
               format = "[$symbol]($style)";
 
               symbols = {
-                NixOS = " ";
+                NixOS = " ";
               };
             };
 
@@ -294,7 +294,7 @@
             };
 
             nix_shell = {
-              symbol = " ";
+              symbol = " ";
               style = "bold cyan";
               format = "via [$symbol$name]($style) ";
 
@@ -304,25 +304,25 @@
             };
 
             nodejs = {
-              symbol = " ";
+              symbol = " ";
               style = "bold green";
               format = "via [$symbol$version]($style) ";
             };
 
             rust = {
-              symbol = " ";
+              symbol = " ";
               style = "bold red";
               format = "via [$symbol$version]($style) ";
             };
 
             python = {
-              symbol = " ";
+              symbol = " ";
               style = "bold yellow";
               format = "via [$symbol$version]($style) ";
             };
 
             docker_context = {
-              symbol = " ";
+              symbol = " ";
               style = "bold blue";
               format = "via [$symbol$context]($style) ";
             };
