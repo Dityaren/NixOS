@@ -1,21 +1,24 @@
-{ self, inputs, ... }:
+{ ... }:
 
 {
   flake.nixosModules.tmux =
     {
+      config,
       vars,
       pkgs,
       ...
     }:
     let
-      # Prints the styled branch segment (lualine "b" section), nothing outside a git repo
+      c = config.lib.stylix.colors.withHashtag;
+
       gitBranch = pkgs.writeShellScript "tmux-git-branch" ''
-        branch="$(${pkgs.git}/bin/git -C "$1" branch --show-current 2>/dev/null)"
-        [ -n "$branch" ] && printf '#[fg=#aaaaaa,bg=#222222] 󰘬 %s #[fg=#111111,bg=#111111]' "$branch"
+        ${pkgs.git}/bin/git -C "$1" branch --show-current 2>/dev/null
       '';
     in
     {
       home-manager.users.${vars.username} = {
+        stylix.targets.tmux.enable = false;
+
         programs.tmux = {
           enable = true;
           package = pkgs.tmux;
@@ -33,25 +36,14 @@
           terminal = "tmux-256color";
           secureSocket = true;
 
-          plugins = with pkgs.tmuxPlugins; [
-            sensible
-            yank
-            vim-tmux-navigator
-            resurrect
-            continuum
-          ];
+          plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
 
           extraConfig = ''
-            set -g default-terminal "tmux-256color"
-            set -ag terminal-overrides ",xterm-256color:RGB"
-            set -ag terminal-overrides ",xterm*:Tc"
-
-            set -g base-index 1
-            setw -g pane-base-index 1
+            set -as terminal-features ",*:RGB"
+            set -g set-clipboard on
             set -g renumber-windows on
 
             bind c new-window -c "#{pane_current_path}"
-
             bind '"' split-window -v -c "#{pane_current_path}"
             bind % split-window -h -c "#{pane_current_path}"
             bind | split-window -h -c "#{pane_current_path}"
@@ -71,51 +63,39 @@
             bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
             bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
 
-            bind r source-file ~/.config/tmux/tmux.conf \; display-message "tmux config reloaded"
+            bind r source-file ~/.config/tmux/tmux.conf \; display-message "reloaded"
 
-            # ---------------------------------------------------------------
-            # Status bar, modeled on the lualine config
-            #   a: fg #111111 bg #aaaaaa (bold)   b: fg #aaaaaa bg #222222
-            #   c: fg #888888 bg #111111          inactive: #666 / #555 / #444
-            # ---------------------------------------------------------------
+            # ---- status: flat, transparent, no icons or blocks ----
+            # bg=default lets the terminal's own background (and its opacity) show through.
             set -g status on
-            set -g status-position top
-            set -g status-interval 5
+            set -g status-position bottom
+            set -g status-interval 10
             set -g status-justify left
-            set -g status-left-length 80
-            set -g status-right-length 120
+            set -g status-left-length 40
+            set -g status-right-length 60
+            set -g status-style "bg=default,fg=${c.base03}"
 
-            set -g status-style "bg=#111111,fg=#888888"
+            # left: session name, accent dot while the prefix is active
+            set -g status-left "#[fg=${c.base04}]#S #[fg=${c.base0D}]#{?client_prefix,• ,}"
 
-            # a: mode letter (N normal, P prefix pressed, C copy mode) | b: git branch
-            set -g status-left "#[fg=#111111,bg=#aaaaaa,bold] #{?client_prefix,P,#{?pane_in_mode,C,N}} #[fg=#111111,bg=#111111,nobold]#(${gitBranch} '#{pane_current_path}')#[fg=#888888,bg=#111111,nobold] "
+            # windows: dim, active one bright
+            setw -g window-status-separator ""
+            setw -g window-status-format "#[fg=${c.base03}] #I:#W "
+            setw -g window-status-current-format "#[fg=${c.base05},bold] #I:#W#{?window_zoomed_flag,+,} "
 
-            # c: window list, "│" component separators
-            setw -g window-status-separator "#[fg=#444444,bg=#111111]│"
-            setw -g window-status-format "#[fg=#666666,bg=#111111] #I:#W "
-            setw -g window-status-current-format "#[fg=#aaaaaa,bg=#111111,bold] #I:#W#{?window_zoomed_flag, 󰁌,} "
-
-            # x: current dir | y: session | z: clock (a-style block)
-            set -g status-right "#[fg=#888888,bg=#111111]#{b:pane_current_path} #[fg=#444444]│ #[fg=#aaaaaa,bg=#222222] #S #[fg=#111111,bg=#aaaaaa,bold] %H:%M "
+            # right: git branch (only in a repo), time
+            set -g status-right "#[fg=${c.base03}]#(${gitBranch} '#{pane_current_path}')  #[fg=${c.base04}]%H:%M"
 
             set -g pane-border-lines single
-            set -g pane-border-style "fg=#333333"
-            set -g pane-active-border-style "fg=#888888"
+            set -g pane-border-style "fg=${c.base02}"
+            set -g pane-active-border-style "fg=${c.base0D}"
 
-            set -g message-style "bg=#222222,fg=#aaaaaa"
-            set -g message-command-style "bg=#222222,fg=#aaaaaa"
-            set -g mode-style "bg=#333333,fg=#ffffff"
+            set -g message-style "bg=default,fg=${c.base05}"
+            set -g message-command-style "bg=default,fg=${c.base05}"
+            set -g mode-style "bg=${c.base02},fg=${c.base05}"
 
             setw -g automatic-rename on
-            setw -g automatic-rename-format '#W'
-
-            set -g @resurrect-capture-pane-contents 'on'
-            set -g @resurrect-strategy-nvim 'session'
-            set -g @continuum-restore 'on'
-            set -g @continuum-save-interval '15'
-
-            set -g focus-events on
-            set -g history-limit 10000
+            setw -g automatic-rename-format "#{b:pane_current_path}"
           '';
         };
       };
