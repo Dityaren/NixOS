@@ -32,8 +32,6 @@
         self.nixosModules.mango-dms
         self.nixosModules.sway
         self.nixosModules.stylix
-        self.nixosModules.llama
-
       ];
 
       nvim = {
