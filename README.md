@@ -2,7 +2,7 @@
 
 # ❄️ snow
 
-**Modular, declarative NixOS — one flake, zero drift.**
+**Modular, declarative NixOS — one flake, multi host.**
 
 ![NixOS](https://img.shields.io/badge/NixOS-unstable-5277C3?style=flat-square&logo=nixos&logoColor=white)
 ![Flakes](https://img.shields.io/badge/flakes-enabled-7EBAE4?style=flat-square&logo=nixos&logoColor=white)
