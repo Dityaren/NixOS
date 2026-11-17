@@ -128,7 +128,7 @@
           size = 24;
         };
 
-        opacity.terminal = 0.88;
+        opacity.terminal = 1.0;
       };
 
       # DMS keeps its own matugen running (shell UI recolors live when the wallpaper changes).
