@@ -21,7 +21,6 @@
         self.nixosModules.xdg
         self.nixosModules.nixcats
         self.nixosModules.spicetify
-        self.nixosModules.onlyoffice
         self.nixosModules.gaming
         self.nixosModules.screenshot
         self.nixosModules.fish
@@ -185,7 +184,6 @@
         vista-fonts
       ];
 
-      # onlyoffice has trouble with symlinks: https://github.com/ONLYOFFICE/DocumentServer/issues/1859
       system.userActivationScripts = {
         copy-fonts-local-share = {
           text = ''
