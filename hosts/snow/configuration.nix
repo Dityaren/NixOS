@@ -25,14 +25,12 @@
         self.nixosModules.gaming
         self.nixosModules.screenshot
         self.nixosModules.fish
-        # self.nixosModules.alacritty
         self.nixosModules.zen-browser
         self.nixosModules.power-management
         self.nixosModules.tmux
         self.nixosModules.anime-game-launcher
         self.nixosModules.mango-dms
         self.nixosModules.sway
-        self.nixosModules.foot
         self.nixosModules.stylix
         self.nixosModules.llama
 
@@ -158,7 +156,6 @@
           sqlit-tui
           legcord
           devenv
-          kitty
           jq
           sioyek
           wget
