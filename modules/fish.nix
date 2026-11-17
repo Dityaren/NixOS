@@ -3,10 +3,14 @@
 {
   flake.nixosModules.fish =
     {
+      config,
       vars,
       pkgs,
       ...
     }:
+    let
+      c = config.lib.stylix.colors.withHashtag;
+    in
     {
       programs.fish.enable = true;
 
@@ -18,6 +22,8 @@
       ];
 
       home-manager.users.${vars.username} = {
+        stylix.targets.fzf.enable = false;
+
         programs.fish = {
           enable = true;
 
@@ -159,8 +165,6 @@
           ];
         };
 
-        # Installs eza and defines the aliases ls, ll, la, lt and lla for fish.
-        # Icons need a Nerd Font in the terminal (set through Stylix).
         programs.eza = {
           enable = true;
           enableFishIntegration = true;
@@ -179,15 +183,36 @@
 
           defaultCommand = "fd --type f --hidden --follow --exclude .git";
 
+          colors = {
+            bg = "-1";
+            "bg+" = "-1";
+            gutter = "-1";
+            fg = c.base03;
+            "fg+" = c.base05;
+            hl = c.base0D;
+            "hl+" = c.base0D;
+            info = c.base03;
+            prompt = c.base0D;
+            pointer = c.base0D;
+            marker = c.base0D;
+            spinner = c.base03;
+            header = c.base03;
+            border = c.base02;
+          };
+
           defaultOptions = [
-            "--height=60%"
+            "--height=~30%"
+            "--min-height=6"
             "--layout=reverse"
-            "--border=rounded"
-            "--info=inline"
-            "--padding=1"
-            "--prompt=❯ "
-            "--pointer=▶"
-            "--marker=✓"
+            "--border=none"
+            "--margin=0,1"
+            "--info=inline-right"
+            "--no-scrollbar"
+            "--prompt=> "
+            "--pointer=>"
+            "--marker=+"
+            "--preview-window=right,50%,border-left,hidden"
+            "--bind=alt-p:toggle-preview"
           ];
         };
 
@@ -220,7 +245,7 @@
               format = "[$symbol]($style)";
 
               symbols = {
-                NixOS = " ";
+                NixOS = " ";
               };
             };
 
@@ -269,7 +294,7 @@
             };
 
             nix_shell = {
-              symbol = " ";
+              symbol = " ";
               style = "bold cyan";
               format = "via [$symbol$name]($style) ";
 
@@ -279,25 +304,25 @@
             };
 
             nodejs = {
-              symbol = " ";
+              symbol = " ";
               style = "bold green";
               format = "via [$symbol$version]($style) ";
             };
 
             rust = {
-              symbol = " ";
+              symbol = " ";
               style = "bold red";
               format = "via [$symbol$version]($style) ";
             };
 
             python = {
-              symbol = " ";
+              symbol = " ";
               style = "bold yellow";
               format = "via [$symbol$version]($style) ";
             };
 
             docker_context = {
-              symbol = " ";
+              symbol = " ";
               style = "bold blue";
               format = "via [$symbol$context]($style) ";
             };
