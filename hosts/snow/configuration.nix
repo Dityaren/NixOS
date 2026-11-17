@@ -133,38 +133,46 @@
 
       environment = {
         systemPackages = with pkgs; [
+          # Development
+          devenv
+          gh
+          git
+          helix
+          nodejs_24
+          corepack_24
           pkg-config
           stdenv.cc.cc
           openssl
-          vlc
-          helix
-          nnn
-          libreoffice
-          alsa-utils
+
+          # Desktop
+          alacritty
           brightnessctl
+          libreoffice
+          sioyek
+          zen-beta
 
-          nodejs_24
-          corepack_24
+          # Multimedia
+          alsa-utils
+          legcord
+          vlc
 
+          # Virtualization
           qemu
           virt-manager
-          gh
+          docker-compose
+
+          # Utilities
+          jq
+          nnn
           qbittorrent-enhanced
           sqlit-tui
-          legcord
-          devenv
-          jq
-          sioyek
-          wget
-          git
-          alacritty
           tmux
-          docker-compose
+          wget
         ];
 
         variables = {
-          EDITOR = "vim";
           BROWSER = "zen-beta";
+          EDITOR = "vim";
         };
       };
 
