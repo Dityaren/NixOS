@@ -29,7 +29,6 @@
         self.nixosModules.power-management
         self.nixosModules.tmux
         self.nixosModules.anime-game-launcher
-        self.nixosModules.mango-dms
         self.nixosModules.sway
         self.nixosModules.stylix
       ];
