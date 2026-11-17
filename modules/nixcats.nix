@@ -125,7 +125,6 @@ let
           persistence-nvim
           tiny-inline-diagnostic-nvim
           grug-far-nvim
-          minuet-ai-nvim
         ];
       };
     };
