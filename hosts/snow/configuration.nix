@@ -30,6 +30,7 @@
         self.nixosModules.anime-game-launcher
         self.nixosModules.sway
         self.nixosModules.stylix
+        self.nixosModules.ffmpeg
       ];
 
       nvim = {
