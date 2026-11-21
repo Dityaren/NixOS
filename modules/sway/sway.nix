@@ -54,7 +54,7 @@
         default_floating_border pixel 2
         hide_edge_borders smart
         focus_follows_mouse no
-        workspace_auto_back_and_forth yes
+        workspace_auto_back_and_forth false
 
         assign [app_id="(?i)discord"] $ws5
         assign [class="(?i)discord"] $ws5
