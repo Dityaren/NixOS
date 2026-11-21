@@ -31,6 +31,7 @@
         self.nixosModules.sway
         self.nixosModules.stylix
         self.nixosModules.ffmpeg
+        self.nixosModules.dmm
       ];
 
       nvim = {
@@ -82,6 +83,8 @@
           "2620:fe::9"
         ];
       };
+
+      programs.nm-applet.enable = true;
 
       time.timeZone = "Asia/Jakarta";
 
