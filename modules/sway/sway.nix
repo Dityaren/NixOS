@@ -42,7 +42,7 @@
         include /etc/sway/config.d/*
 
         set $ws1 "1:term"
-        set $ws2 "2:web"
+        set $ws2 "2:browser"
         set $ws3 "3:docs"
         set $ws4 "4:music"
         set $ws5 "5:chat"
