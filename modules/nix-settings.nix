@@ -43,8 +43,13 @@
 
       nix.settings = {
         substituters = [
-          "https://mirror.sjtu.edu.cn/nix-channels/store" # Shanghai Jiao Tong University - best for Asia
-          "https://mirrors.ustc.edu.cn/nix-channels/store" # USTC backup mirror
+          # status: https://mirrors.tuna.tsinghua.edu.cn/
+          "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+
+          # status: https://mirrors.ustc.edu.cn/status/
+          "https://mirrors.ustc.edu.cn/nix-channels/store"
+
+          # "https://mirror.sjtu.edu.cn/nix-channels/store" # Shanghai Jiao Tong University - best for Asia
           "https://cache.nixos.org" # Official global cache
           "https://nix-community.cachix.org" # Community packages
           "https://ezkea.cachix.org"
