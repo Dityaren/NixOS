@@ -42,10 +42,12 @@
       ];
 
       nix.settings = {
-
         substituters = [
+          "https://mirror.sjtu.edu.cn/nix-channels/store" # Shanghai Jiao Tong University - best for Asia
+          "https://mirrors.ustc.edu.cn/nix-channels/store" # USTC backup mirror
+          "https://cache.nixos.org" # Official global cache
+          "https://nix-community.cachix.org" # Community packages
           "https://ezkea.cachix.org"
-          "https://nix-community.cachix.org"
         ];
         trusted-public-keys = [
           "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
