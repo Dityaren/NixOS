@@ -13,6 +13,7 @@
     {
       imports = [
         self.nixosModules.hardware
+        self.nixosModules.ideapad-conservative-mode
 
         self.nixosModules.home-manager
         self.nixosModules.audio
