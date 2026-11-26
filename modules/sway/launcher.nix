@@ -11,12 +11,15 @@
 
       environment.etc."fuzzel/fuzzel.ini".text = ''
         [main]
+        anchor = top-left
         font=${font.monospace.name}:size=${toString font.sizes.popups}
         terminal=${pkgs.foot}/bin/foot -e
-        icons-enabled=no
+        icons-enabled=true
         prompt="> "
         width=40
         lines=10
+        x-margin = 20
+        y-margin = 10
 
         [colors]
         background=${c.base00}f2
@@ -28,7 +31,7 @@
         border=${c.base0D}ff
 
         [border]
-        width=2
+        width=0
         radius=0
       '';
 
