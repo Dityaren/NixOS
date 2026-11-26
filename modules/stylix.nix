@@ -130,9 +130,6 @@
 
         opacity.terminal = 1.0;
       };
-      home-manager.users.${vars.username} = {
-        stylix.targets.wayprompt.enable = false;
-      };
       # DMS keeps its own matugen running (shell UI recolors live when the wallpaper changes).
       # Stylix owns the app themes (GTK, Qt, foot, ...), so keep DMS's "Apply GTK/Qt Themes"
       # toggles off and do not include DMS's foot colors.
