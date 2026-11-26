@@ -30,7 +30,7 @@
       environment.etc."sway/config.d/20-bar.conf".text = ''
         bar {
           id main
-          position top
+          position bottom
           mode dock
           status_command ${status}
           font pango:${font.monospace.name} ${toString font.sizes.desktop}

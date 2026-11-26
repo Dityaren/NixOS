@@ -11,7 +11,7 @@
 
       environment.etc."fuzzel/fuzzel.ini".text = ''
         [main]
-        anchor = top-left
+        anchor = bottom-left
         font=${font.monospace.name}:size=${toString font.sizes.popups}
         terminal=${pkgs.foot}/bin/foot -e
         icons-enabled=true
