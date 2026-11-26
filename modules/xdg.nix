@@ -44,7 +44,7 @@
 
         nautilus-open-any-terminal = {
           enable = true;
-          terminal = "alacritty";
+          terminal = "foot";
         };
       };
 
@@ -61,7 +61,6 @@
       };
 
       environment.systemPackages = with pkgs; [
-        alacritty
         nautilus
         file-roller
         unzip

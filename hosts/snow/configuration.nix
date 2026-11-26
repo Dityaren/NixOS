@@ -152,7 +152,6 @@
           openssl
 
           # Desktop
-          alacritty
           brightnessctl
           libreoffice
           sioyek
