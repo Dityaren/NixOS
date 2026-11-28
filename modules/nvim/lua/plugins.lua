@@ -52,6 +52,7 @@ require("render-markdown").setup({
 	render_modes = { "n", "c", "t" },
 	debounce = 100,
 	signs = { enabled = false },
+	code = { border = "thin" },
 })
 
 require("illuminate").configure({
@@ -61,40 +62,17 @@ require("illuminate").configure({
 	under_cursor = true,
 })
 
-require("colorizer").setup({
-	filetypes = {
-		"css",
-		"scss",
-		"sass",
-		"less",
-		"html",
-		"javascript",
-		"javascriptreact",
-		"typescript",
-		"typescriptreact",
-	},
-	user_default_options = {
-		mode = "virtualtext",
-		names = false,
-		virtualtext = "■ ",
-	},
-})
-
-local mode_theme = {
-	a = { fg = "#111111", bg = "#aaaaaa", gui = "bold" },
-	b = { fg = "#aaaaaa", bg = "#222222" },
-	c = { fg = "#888888", bg = "#111111" },
-}
-local lualine_theme = {
-	inactive = {
-		a = { fg = "#666666", bg = "#111111" },
-		b = { fg = "#555555", bg = "#111111" },
-		c = { fg = "#444444", bg = "#111111" },
-	},
-}
+-- Monochrome statusline: terminal-transparent, normal foreground, bold mode letter.
+local nfg = vim.api.nvim_get_hl(0, { name = "Normal", link = false }).fg
+local fg = nfg and string.format("#%06x", nfg) or "NONE"
+local plain = { fg = fg, bg = "NONE" }
+local mode_theme = { a = { fg = fg, bg = "NONE", gui = "bold" }, b = plain, c = plain }
+local lualine_theme = { inactive = mode_theme }
 for _, m in ipairs({ "normal", "insert", "visual", "replace", "command" }) do
 	lualine_theme[m] = mode_theme
 end
+
+require("nvim-web-devicons").setup({ color_icons = false })
 
 require("lualine").setup({
 	options = {
@@ -121,9 +99,9 @@ require("lualine").setup({
 			},
 		},
 		lualine_x = {
-			{ "diagnostics", symbols = { error = "󰅚 ", warn = "󰀪 ", info = "󰋽 ", hint = "󰌵 " } },
+			{ "diagnostics", colored = false, symbols = { error = "󰅚 ", warn = "󰀪 ", info = "󰋽 ", hint = "󰌵 " } },
 		},
-		lualine_y = { { "filetype", icon_only = true } },
+		lualine_y = { { "filetype", icon_only = true, colored = false } },
 		lualine_z = { { "location", padding = 1 } },
 	},
 	inactive_sections = {
@@ -152,7 +130,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
 defer("blink.cmp", function()
 	require("blink.cmp").setup({
 		completion = {
-			documentation = { auto_show = true },
+			documentation = { auto_show = true, window = { border = "rounded" } },
 			accept = { auto_brackets = { enabled = true } },
 			menu = {
 				border = "rounded",
@@ -193,7 +171,7 @@ defer("telescope", function()
 			selection_caret = " > ",
 			path_display = { "truncate" },
 			sorting_strategy = "ascending",
-			border = false,
+			border = true,
 			borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
 			layout_strategy = "bottom_pane",
 			layout_config = { height = 0.35, width = 1.0, prompt_position = "top" },
@@ -303,7 +281,7 @@ defer("noice", function()
 			bottom_search = true,
 			command_palette = false,
 			long_message_to_split = true,
-			lsp_doc_border = false,
+			lsp_doc_border = true,
 		},
 	})
 end)
@@ -373,17 +351,24 @@ defer("gitsigns", function()
 	require("gitsigns").setup({
 		current_line_blame = false,
 		signs = {
-			add = { text = "▎" },
-			change = { text = "▎" },
-			delete = { text = "" },
-			topdelete = { text = "" },
-			changedelete = { text = "▎" },
+			-- no colours, so the sign shape carries the meaning
+			add = { text = "+" },
+			change = { text = "~" },
+			delete = { text = "_" },
+			topdelete = { text = "‾" },
+			changedelete = { text = "~" },
+			untracked = { text = "┆" },
 		},
 	})
 end)
 
 defer("which-key", function()
-	require("which-key").setup({ preset = "modern", delay = 300 })
+	require("which-key").setup({
+		preset = "modern",
+		delay = 300,
+		win = { border = "rounded" },
+		icons = { mappings = false },
+	})
 	require("which-key").add({
 		{ "<leader>b", group = "buffer" },
 		{ "<leader>c", group = "code" },
@@ -407,17 +392,7 @@ defer("trouble+harpoon+todo", function()
 	require("harpoon"):setup({
 		settings = { save_on_toggle = true, sync_on_ui_close = true },
 	})
-	require("todo-comments").setup()
-end)
-
-defer("ibl", function()
-	require("ibl").setup({
-		indent = { char = "┊" },
-		scope = { enabled = true, char = "┃" },
-		exclude = {
-			filetypes = { "help", "dashboard", "alpha", "TelescopePrompt", "TelescopeResults", "oil" },
-		},
-	})
+	require("todo-comments").setup({ signs = false })
 end)
 
 defer("lazydev", function()
@@ -435,7 +410,7 @@ defer("aerial+context", function()
 		layout = { min_width = 30 },
 		show_guides = true,
 	})
-	require("treesitter-context").setup({ max_lines = 3, trim_scope = "outer" })
+	require("treesitter-context").setup({ max_lines = 3, trim_scope = "outer", separator = "─" })
 end)
 
 defer("toggleterm+persistence+grug", function()
@@ -452,15 +427,6 @@ defer("tiny-inline-diagnostic", function()
 	require("tiny-inline-diagnostic").setup({
 		preset = "modern",
 		options = { show_source = { enabled = true }, multilines = { enabled = true } },
-	})
-end)
-
-defer("smear-cursor", function()
-	require("smear_cursor").setup({
-		stiffness = 0.8,
-		trailing_stiffness = 0.5,
-		distance_stop_animating = 0.5,
-		hide_target_hack = false,
 	})
 end)
 

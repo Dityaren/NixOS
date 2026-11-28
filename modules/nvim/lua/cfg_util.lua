@@ -6,9 +6,14 @@
 local M = {}
 
 local queue = {}
+local done_cbs = {}
 
 function M.defer(name, fn)
 	queue[#queue + 1] = { name = name, fn = fn }
+end
+
+function M.after_queue(fn)
+	done_cbs[#done_cbs + 1] = fn
 end
 
 function M.once(fn)
@@ -25,6 +30,9 @@ end
 local function run_from(i)
 	local item = queue[i]
 	if not item then
+		for _, cb in ipairs(done_cbs) do
+			pcall(cb)
+		end
 		return
 	end
 	local ok, err = xpcall(item.fn, debug.traceback)

@@ -79,7 +79,6 @@ let
           nvim-ts-autotag
           better-escape-nvim
           flash-nvim
-          smear-cursor-nvim
           gitsigns-nvim
           which-key-nvim
           trouble-nvim
@@ -87,14 +86,12 @@ let
           noice-nvim
           todo-comments-nvim
           vim-illuminate
-          nvim-colorizer-lua
           nvim-lspconfig
           blink-cmp
           cord-nvim
           lualine-nvim
           telescope-nvim
           telescope-fzf-native-nvim
-          indent-blankline-nvim
           nvim-treesitter.withAllGrammars
           nvim-treesitter-textobjects
           conform-nvim

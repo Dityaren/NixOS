@@ -17,7 +17,8 @@ local o = vim.opt
 o.number = true
 o.relativenumber = true
 o.cursorline = true
-o.cursorlineopt = "both"
+o.cursorlineopt = "number"
+o.winborder = "rounded"
 o.signcolumn = "yes:1"
 o.scrolloff = 8
 o.sidescrolloff = 8
@@ -63,7 +64,7 @@ o.foldlevelstart = 99
 
 require("kanagawa").setup({
 	theme = "dragon",
-	transparent = false,
+	transparent = true,
 	terminalColors = true,
 	dimInactive = false,
 	commentStyle = { italic = true },
@@ -73,37 +74,20 @@ require("kanagawa").setup({
 })
 vim.cmd.colorscheme("kanagawa")
 
--- `update = true` is essential: without it nvim_set_hl REPLACES the whole group, so e.g.
--- Normal = { bg = "none" } silently wiped kanagawa's foreground colour for normal text.
-local function apply_highlights()
-	local hl = {
-		Normal = { bg = "none" },
-		NormalNC = { bg = "none" },
-		NormalFloat = { bg = "none" },
-		FloatBorder = { fg = "#666666", bg = "none" },
-		CursorLine = { bg = "#1f1f1f" },
-		LineNr = { fg = "#555555" },
-		CursorLineNr = { fg = "#aaaaaa", bold = true },
-		SignColumn = { bg = "none" },
-		StatusLine = { fg = "#aaaaaa", bg = "none" },
-		StatusLineNC = { fg = "#555555", bg = "none" },
-		WinSeparator = { fg = "#333333" },
-		Pmenu = { fg = "#aaaaaa", bg = "#151515" },
-		PmenuSel = { fg = "#ffffff", bg = "#333333", bold = true },
-		Visual = { bg = "#333333" },
-	}
-	for group, spec in pairs(hl) do
-		spec.update = true
-		vim.api.nvim_set_hl(0, group, spec)
-	end
-end
-apply_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", { group = aug, callback = apply_highlights })
+-- Transparent + colourless UI (code highlighting keeps its colours): see lua/ui.lua
+require("ui").setup()
 
 vim.diagnostic.config({
 	virtual_text = false,
 	underline = true,
-	signs = true,
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "E",
+			[vim.diagnostic.severity.WARN] = "W",
+			[vim.diagnostic.severity.INFO] = "I",
+			[vim.diagnostic.severity.HINT] = "H",
+		},
+	},
 	severity_sort = true,
 	update_in_insert = false,
 	float = { border = "rounded", source = "if_many" },
