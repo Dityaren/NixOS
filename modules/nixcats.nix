@@ -13,6 +13,7 @@ let
       lspsAndRuntimeDeps = {
         general = with pkgs; [
           ripgrep
+          fzf
           fd
           nil
           nixfmt
@@ -90,9 +91,13 @@ let
           blink-cmp
           cord-nvim
           lualine-nvim
-          telescope-nvim
-          telescope-fzf-native-nvim
           indent-blankline-nvim
+          fzf-lua
+          vim-sleuth
+          undotree
+          dropbar-nvim
+          git-conflict-nvim
+          nvim-bqf
           nvim-treesitter.withAllGrammars
           nvim-treesitter-textobjects
           conform-nvim

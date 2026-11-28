@@ -3,6 +3,9 @@ local defer = util.defer
 
 -- ───────── Eager: needed for the very first frame / first buffer ─────────
 
+vim.g.undotree_WindowLayout = 2
+vim.g.undotree_SetFocusWhenToggle = 1
+
 require("alpha").setup({
 	layout = {
 		{ type = "padding", val = 2 },
@@ -163,23 +166,28 @@ defer("luasnip", function()
 	require("luasnip.loaders.from_vscode").lazy_load()
 end)
 
-defer("telescope", function()
-	local telescope = require("telescope")
-	telescope.setup({
-		defaults = {
-			prompt_prefix = "   ",
-			selection_caret = " > ",
-			path_display = { "truncate" },
-			sorting_strategy = "ascending",
-			border = true,
-			borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-			layout_strategy = "bottom_pane",
-			layout_config = { height = 0.35, width = 1.0, prompt_position = "top" },
-			-- These are Lua patterns: an unescaped ".git/" also matched e.g. "digit/".
-			file_ignore_patterns = { "node_modules", "%.git/", "dist/", "build/", "%.next/", "target/" },
+defer("fzf-lua", function()
+	local fzf = require("fzf-lua")
+	fzf.setup({
+		-- bottom pane, like the old telescope layout
+		winopts = {
+			height = 0.4,
+			width = 1.0,
+			row = 1,
+			col = 0,
+			border = "rounded",
+			preview = { layout = "horizontal", horizontal = "right:50%", border = "rounded" },
 		},
+		-- colours come from the (colourless) highlight groups; mark the selected row with reverse video
+		fzf_colors = { true, ["fg+"] = "reverse" },
 	})
-	pcall(telescope.load_extension, "fzf")
+	fzf.register_ui_select() -- vim.ui.select (code actions etc.) through fzf-lua
+end)
+
+defer("git-conflict+bqf+dropbar", function()
+	require("git-conflict").setup({ default_mappings = false })
+	require("bqf").setup({ preview = { border = "rounded", winblend = 0 } })
+	require("dropbar").setup({ menu = { win_configs = { border = "rounded" } } })
 end)
 
 defer("conform", function()
@@ -374,6 +382,7 @@ defer("which-key", function()
 		{ "<leader>d", group = "debug" },
 		{ "<leader>f", group = "find" },
 		{ "<leader>g", group = "git" },
+		{ "<leader>gx", group = "conflict" },
 		{ "<leader>k", group = "cmake" },
 		{ "<leader>n", group = "noice" },
 		{ "<leader>o", group = "overseer" },
@@ -409,7 +418,7 @@ defer("lazydev", function()
 end)
 
 defer("git ui", function()
-	require("neogit").setup({ integrations = { diffview = true, telescope = true } })
+	require("neogit").setup({ integrations = { diffview = true, fzf_lua = true } })
 	require("diffview").setup({})
 end)
 

@@ -58,7 +58,7 @@ function M.apply()
 
 	-- Things that used to be told apart by colour now use attributes.
 	for _, g in ipairs({ "Visual", "VisualNOS", "Search", "Substitute", "PmenuSel", "WildMenu",
-		"QuickFixLine", "BlinkCmpMenuSelection", "TelescopeSelection", "DiffText" }) do
+		"QuickFixLine", "BlinkCmpMenuSelection", "FzfLuaCursorLine", "DiffText" }) do
 		set(g, { reverse = true })
 	end
 	for _, g in ipairs({ "IncSearch", "CurSearch" }) do
@@ -68,7 +68,7 @@ function M.apply()
 	set("CursorLineNr", { bold = true })
 	set("TabLineSel", { bold = true })
 	set("Folded", { italic = true })
-	for _, g in ipairs({ "PmenuMatch", "PmenuMatchSel", "BlinkCmpLabelMatch", "TelescopeMatching" }) do
+	for _, g in ipairs({ "PmenuMatch", "PmenuMatchSel", "BlinkCmpLabelMatch", "FzfLuaSearch" }) do
 		set(g, { bold = true, underline = true })
 	end
 
