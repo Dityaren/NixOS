@@ -1,9 +1,17 @@
-local config_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h")
-vim.opt.runtimepath:prepend(config_dir)
-package.path = config_dir .. "/lua/?.lua;" .. config_dir .. "/lua/?/init.lua;" .. package.path
+vim.loader.enable()
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+
+-- Providers / runtime plugins nothing in this config uses: skip their startup cost.
+for _, p in ipairs({ "python3", "node", "ruby", "perl" }) do
+	vim.g["loaded_" .. p .. "_provider"] = 0
+end
+for _, p in ipairs({ "gzip", "tarPlugin", "zipPlugin", "2html_plugin", "tutor_mode_plugin" }) do
+	vim.g["loaded_" .. p] = 1
+end
+
+local aug = vim.api.nvim_create_augroup("user_config", { clear = true })
 
 local o = vim.opt
 o.number = true
@@ -30,7 +38,6 @@ o.splitbelow = true
 o.splitright = true
 o.splitkeep = "screen"
 o.mouse = "a"
-o.clipboard = "unnamedplus"
 o.ignorecase = true
 o.smartcase = true
 o.hlsearch = true
@@ -40,8 +47,14 @@ o.undofile = true
 o.confirm = true
 o.updatetime = 250
 o.timeoutlen = 300
+o.synmaxcol = 300
 o.fillchars = { eob = " " }
 o.sessionoptions = "buffers,curdir,tabpages,winsize,help,globals,skiprtp,folds"
+
+-- Setting 'clipboard' eagerly makes nvim probe for a clipboard provider during startup.
+vim.schedule(function()
+	o.clipboard = "unnamedplus"
+end)
 
 o.foldmethod = "expr"
 o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
@@ -60,6 +73,8 @@ require("kanagawa").setup({
 })
 vim.cmd.colorscheme("kanagawa")
 
+-- `update = true` is essential: without it nvim_set_hl REPLACES the whole group, so e.g.
+-- Normal = { bg = "none" } silently wiped kanagawa's foreground colour for normal text.
 local function apply_highlights()
 	local hl = {
 		Normal = { bg = "none" },
@@ -78,11 +93,12 @@ local function apply_highlights()
 		Visual = { bg = "#333333" },
 	}
 	for group, spec in pairs(hl) do
+		spec.update = true
 		vim.api.nvim_set_hl(0, group, spec)
 	end
 end
 apply_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", { callback = apply_highlights })
+vim.api.nvim_create_autocmd("ColorScheme", { group = aug, callback = apply_highlights })
 
 vim.diagnostic.config({
 	virtual_text = false,
@@ -93,26 +109,42 @@ vim.diagnostic.config({
 	float = { border = "rounded", source = "if_many" },
 })
 
-_G.typescript_goto_file = function()
-	local ts_fts = {
-		javascript = true,
-		javascriptreact = true,
-		typescript = true,
-		typescriptreact = true,
-	}
-	if not ts_fts[vim.bo.filetype] then
-		vim.cmd("normal! gf")
-		return
-	end
-	if #vim.lsp.get_clients({ bufnr = 0, name = "vtsls" }) == 0 then
+local ts_fts = {
+	javascript = true,
+	javascriptreact = true,
+	typescript = true,
+	typescriptreact = true,
+}
+local function typescript_goto_file()
+	if not ts_fts[vim.bo.filetype] or #vim.lsp.get_clients({ bufnr = 0, name = "vtsls" }) == 0 then
 		vim.cmd("normal! gf")
 		return
 	end
 	vim.lsp.buf.definition({ reuse_win = true })
 end
 
-vim.api.nvim_create_autocmd("FileType", {
+-- Big files: skip treesitter / folding / swap / undo, and (see plugins.lua) auto-format.
+local BIGFILE = 1.5 * 1024 * 1024
+vim.api.nvim_create_autocmd("BufReadPre", {
+	group = aug,
 	callback = function(args)
+		local ok, stat = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(args.buf))
+		if ok and stat and stat.size > BIGFILE then
+			vim.b[args.buf].bigfile = true
+			vim.opt_local.foldmethod = "manual"
+			vim.opt_local.swapfile = false
+			vim.opt_local.undofile = false
+			vim.opt_local.cursorline = false
+		end
+	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = aug,
+	callback = function(args)
+		if vim.b[args.buf].bigfile then
+			return
+		end
 		if pcall(vim.treesitter.start, args.buf) then
 			local ok, ts = pcall(require, "nvim-treesitter")
 			if ok and ts.indentexpr then
@@ -123,13 +155,19 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
+	group = aug,
 	callback = function()
 		vim.hl.on_yank({ timeout = 150 })
 	end,
 })
 
+local no_restore = { gitcommit = true, gitrebase = true, help = true }
 vim.api.nvim_create_autocmd("BufReadPost", {
+	group = aug,
 	callback = function(args)
+		if vim.bo[args.buf].buftype ~= "" or no_restore[vim.bo[args.buf].filetype] then
+			return
+		end
 		local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
 		local lines = vim.api.nvim_buf_line_count(args.buf)
 		if mark[1] > 0 and mark[1] <= lines then
@@ -138,12 +176,23 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
+-- <Esc><Esc> leaves terminal mode, except inside lazygit where a single <Esc> already means "back".
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = aug,
+	callback = function(args)
+		if vim.api.nvim_buf_get_name(args.buf):find("lazygit", 1, true) then
+			return
+		end
+		vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { buffer = args.buf, desc = "Exit terminal mode" })
+	end,
+})
+
 local function map(mode, lhs, rhs, desc)
 	vim.keymap.set(mode, lhs, rhs, { desc = desc })
 end
 
 map("n", "gd", vim.lsp.buf.definition, "Go to definition")
-map("n", "gf", _G.typescript_goto_file, "Go to file or import")
+map("n", "gf", typescript_goto_file, "Go to file or import")
 map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
 map("n", "gr", vim.lsp.buf.references, "Find references")
 map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
@@ -156,8 +205,19 @@ map("n", "<leader>ci", function()
 	vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
 end, "Toggle inlay hints")
 map({ "n", "v" }, "<leader>cf", function()
-	require("conform").format({ async = true, lsp_format = "fallback" })
-end, "Format buffer")
+	-- In visual mode, format only the selected lines (conform formats the whole buffer otherwise).
+	local range
+	local m = vim.fn.mode()
+	if m == "v" or m == "V" or m == "\22" then
+		local s, e = vim.fn.line("v"), vim.fn.line(".")
+		if s > e then
+			s, e = e, s
+		end
+		local last = vim.api.nvim_buf_get_lines(0, e - 1, e, false)[1] or ""
+		range = { start = { s, 0 }, ["end"] = { e, #last } }
+	end
+	require("conform").format({ async = true, lsp_format = "fallback", range = range })
+end, "Format buffer / selection")
 map("n", "[d", function()
 	vim.diagnostic.jump({ count = -1, float = true })
 end, "Previous diagnostic")
@@ -185,6 +245,10 @@ end, "Delete buffer")
 map("n", "<leader>bo", "<cmd>%bd|e#|bd#<CR>", "Delete other buffers")
 map("v", "<", "<gv", "Indent left (keep selection)")
 map("v", ">", ">gv", "Indent right (keep selection)")
+
+-- mini.comment provides gc / gcc; this is just a convenient alias.
+vim.keymap.set("n", "<leader>/", "gcc", { remap = true, desc = "Toggle comment line" })
+vim.keymap.set("x", "<leader>/", "gc", { remap = true, desc = "Toggle comment" })
 
 map({ "n", "x", "o" }, "s", function()
 	require("flash").jump()
@@ -252,7 +316,6 @@ map("n", "<leader>gl", function()
 		or require("toggleterm.terminal").Terminal:new({ cmd = "lazygit", direction = "float", hidden = true })
 	lazygit_term:toggle()
 end, "Lazygit")
-map("t", "<Esc><Esc>", "<C-\\><C-n>", "Exit terminal mode")
 map("n", "<leader>cs", "<cmd>AerialToggle! right<CR>", "Symbol outline")
 map("n", "<leader>qs", function()
 	require("persistence").load()
@@ -275,3 +338,6 @@ require("dev")
 require("lsp")
 
 require("strip_comments").setup()
+
+-- Must be last: kicks off the deferred plugin setup queue once the UI is up.
+require("cfg_util").start()

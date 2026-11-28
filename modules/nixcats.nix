@@ -27,7 +27,6 @@ let
           vscode-langservers-extracted
           prettier
           yaml-language-server
-          vscode-json-languageserver
           emmet-language-server
           prettierd
           vscode-js-debug
@@ -97,6 +96,7 @@ let
           telescope-fzf-native-nvim
           indent-blankline-nvim
           nvim-treesitter.withAllGrammars
+          nvim-treesitter-textobjects
           conform-nvim
           nvim-lint
           lazydev-nvim
@@ -110,7 +110,6 @@ let
           neotest-vitest
           neotest-jest
           neotest-gtest
-          FixCursorHold-nvim
           overseer-nvim
           cmake-tools-nvim
           clangd_extensions-nvim

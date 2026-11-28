@@ -73,21 +73,19 @@ local servers = {
 	emmet_language_server = {
 		filetypes = { "html", "css", "scss", "sass", "less", "javascriptreact", "typescriptreact" },
 	},
+	-- SchemaStore's catalogs are large; build them only when a json/yaml server actually starts,
+	-- not on every nvim launch.
 	jsonls = {
-		settings = {
-			json = {
-				schemas = require("schemastore").json.schemas(),
-				validate = { enable = true },
-			},
-		},
+		settings = { json = { validate = { enable = true } } },
+		before_init = function(_, config)
+			config.settings.json.schemas = require("schemastore").json.schemas()
+		end,
 	},
 	yamlls = {
-		settings = {
-			yaml = {
-				schemaStore = { enable = false, url = "" },
-				schemas = require("schemastore").yaml.schemas(),
-			},
-		},
+		settings = { yaml = { schemaStore = { enable = false, url = "" } } },
+		before_init = function(_, config)
+			config.settings.yaml.schemas = require("schemastore").yaml.schemas()
+		end,
 	},
 
 	clangd = {
@@ -99,6 +97,8 @@ local servers = {
 			"--completion-style=detailed",
 			"--function-arg-placeholders=false",
 			"--fallback-style=llvm",
+			"--pch-storage=memory",
+			"--malloc-trim",
 		},
 		init_options = { fallbackFlags = { "-std=c++20" } },
 	},
