@@ -103,6 +103,11 @@ function M.apply()
 		set(g, { underline = true })
 	end
 
+	-- Indent guides: dim grey (the comment colour) so they don't compete with the code.
+	local comment_fg = vim.api.nvim_get_hl(0, { name = "Comment", link = false }).fg
+	set("IblIndent", { fg = comment_fg })
+	set("IblWhitespace", { fg = comment_fg })
+
 	set("SpellBad", { undercurl = true })
 	set("SpellCap", { underdashed = true })
 	set("SpellLocal", { underdotted = true })

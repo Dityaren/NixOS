@@ -92,6 +92,7 @@ let
           lualine-nvim
           telescope-nvim
           telescope-fzf-native-nvim
+          indent-blankline-nvim
           nvim-treesitter.withAllGrammars
           nvim-treesitter-textobjects
           conform-nvim

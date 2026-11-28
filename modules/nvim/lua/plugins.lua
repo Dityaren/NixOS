@@ -367,7 +367,6 @@ defer("which-key", function()
 		preset = "modern",
 		delay = 300,
 		win = { border = "rounded" },
-		icons = { mappings = false },
 	})
 	require("which-key").add({
 		{ "<leader>b", group = "buffer" },
@@ -393,6 +392,16 @@ defer("trouble+harpoon+todo", function()
 		settings = { save_on_toggle = true, sync_on_ui_close = true },
 	})
 	require("todo-comments").setup({ signs = false })
+end)
+
+defer("ibl", function()
+	require("ibl").setup({
+		indent = { char = "│" },
+		scope = { enabled = false },
+		exclude = {
+			filetypes = { "help", "dashboard", "alpha", "TelescopePrompt", "TelescopeResults", "oil" },
+		},
+	})
 end)
 
 defer("lazydev", function()
