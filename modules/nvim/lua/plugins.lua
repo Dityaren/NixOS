@@ -448,7 +448,9 @@ defer("tiny-inline-diagnostic", function()
 	})
 end)
 
-defer("cord", function()
+-- cord must be configured BEFORE VimEnter: the plugin starts itself with its defaults at startup,
+-- so a setup() call from the deferred queue (which runs after VimEnter) is ignored.
+do
 	local lang_names = {
 		javascript = "JavaScript",
 		javascriptreact = "JavaScript React",
@@ -531,4 +533,4 @@ defer("cord", function()
 		},
 		advanced = { discord = { reconnect = { enabled = true, interval = 5000, initial = true } } },
 	})
-end)
+end
